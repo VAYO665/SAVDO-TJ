@@ -1,0 +1,556 @@
+
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAVDO TJ — Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f5f6fa;
+color:#192133;
+}
+header{
+background:#fff;
+padding:20px;
+border-bottom:1px solid #ddd;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+.logo{
+font-size:27px;
+font-weight:900;
+color:#ff6900;
+}
+main{
+max-width:1100px;
+margin:auto;
+padding:20px;
+}
+.card{
+background:white;
+border-radius:20px;
+padding:24px;
+margin-bottom:20px;
+}
+input,textarea{
+width:100%;
+padding:14px;
+border:1px solid #ddd;
+border-radius:12px;
+margin:8px 0 15px;
+font-size:15px;
+}
+textarea{min-height:90px}
+button{
+border:0;
+background:#ff6900;
+color:white;
+padding:14px 18px;
+border-radius:12px;
+font-weight:bold;
+cursor:pointer;
+}
+button:disabled{opacity:.5}
+.red{background:#dc2626}
+.gray{background:#64748b}
+.green{background:#16a34a}
+.full{width:100%}
+.hidden{display:none!important}
+.preview{
+width:100%;
+max-height:250px;
+object-fit:contain;
+border-radius:15px;
+background:#eee;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:15px;
+}
+.banner{
+background:#f5f6fa;
+border-radius:15px;
+padding:15px;
+overflow-wrap:anywhere;
+}
+.banner img{
+width:100%;
+height:180px;
+object-fit:cover;
+border-radius:12px;
+}
+#status{
+white-space:pre-wrap;
+color:#b45309;
+margin:12px 0;
+}
+a{color:#ff6900}
+@media(max-width:650px){
+.grid{grid-template-columns:1fr}
+main{padding:12px}
+.card{padding:18px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">SAVDO TJ ADMIN</div>
+<a href="./">Сайт</a>
+</header>
+
+<main>
+
+<div id="status" role="status"></div>
+
+<div id="login" class="card">
+
+<h2>🔐 Воридшавии Admin</h2>
+
+<form id="loginForm">
+
+<label>Email</label>
+<input id="email" type="email" required>
+
+<label>Парол</label>
+<input id="password" type="password" required>
+
+<button type="submit" class="full">
+Ворид шудан
+</button>
+
+</form>
+</div>
+
+<div id="panel" class="hidden">
+
+<div class="card">
+
+<h2>📊 Панели идоракунӣ</h2>
+
+<p id="adminEmail"></p>
+
+<button class="red" onclick="logout()">
+Баромадан
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>📢 Рекламаи нав</h2>
+
+<form id="bannerForm">
+
+<label>Номи реклама</label>
+<input id="title" maxlength="150" required>
+
+<label>Тавсиф</label>
+<textarea id="description" maxlength="2000"></textarea>
+
+<label>Акс аз галерея</label>
+<input id="image" type="file"
+accept="image/jpeg,image/png,image/webp" required>
+
+<img id="preview" class="preview hidden">
+
+<label>Истиноди реклама</label>
+<input id="link" type="url"
+placeholder="https://example.com">
+
+<label>Оғози реклама</label>
+<input id="startDate" type="datetime-local">
+
+<label>Анҷоми реклама</label>
+<input id="endDate" type="datetime-local">
+
+<button id="publish" type="submit" class="full">
+Ҷойгир кардани реклама
+</button>
+
+</form>
+</div>
+
+<div class="card">
+
+<h2>📋 Ҳамаи рекламаҳо</h2>
+
+<div id="banners" class="grid"></div>
+
+</div>
+
+</div>
+
+</main>
+
+<script>
+
+const db=supabase.createClient(
+"https://hxisbrjwhnjprmlztxqb.supabase.co",
+"sb_publishable_P5V4lNjdiqYoDm-2QDPZZg_yIufHvL6"
+);
+
+const $=id=>document.getElementById(id);
+
+let previewUrl=null;
+let bannerList=[];
+let adminUser=null;
+
+function status(message){
+$("status").textContent=message||"";
+}
+
+function esc(v){
+return String(v??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+})[c]);
+}
+
+function safeUrl(value){
+try{
+const u=new URL(value);
+return ["https:","http:"].includes(u.protocol)
+?u.href:"";
+}catch{
+return "";
+}
+}
+
+async function checkAdmin(){
+
+adminUser=null;
+$("panel").classList.add("hidden");
+$("login").classList.remove("hidden");
+
+const {data,error}=await db.auth.getUser();
+
+if(error||!data.user)return;
+
+const result=await db.rpc("is_admin");
+
+if(result.error||result.data!==true){
+
+status("Шумо ҳуқуқи Admin надоред.");
+return;
+
+}
+
+adminUser=data.user;
+
+$("login").classList.add("hidden");
+$("panel").classList.remove("hidden");
+
+$("adminEmail").textContent=data.user.email;
+
+status("");
+await loadBanners();
+
+}
+
+$("loginForm").onsubmit=async e=>{
+
+e.preventDefault();
+
+const button=e.target.querySelector("button");
+button.disabled=true;
+
+try{
+
+const {error}=await db.auth.signInWithPassword({
+email:$("email").value.trim(),
+password:$("password").value
+});
+
+if(error)throw error;
+
+await checkAdmin();
+
+}catch(e){
+
+status(e.message);
+
+}finally{
+
+button.disabled=false;
+
+}
+
+};
+
+$("image").onchange=()=>{
+
+if(previewUrl)URL.revokeObjectURL(previewUrl);
+
+const file=$("image").files[0];
+
+$("preview").classList.add("hidden");
+
+if(!file)return;
+
+previewUrl=URL.createObjectURL(file);
+
+$("preview").src=previewUrl;
+$("preview").classList.remove("hidden");
+
+};
+
+$("bannerForm").onsubmit=async e=>{
+
+e.preventDefault();
+
+if(!adminUser)return;
+
+$("publish").disabled=true;
+
+let path=null;
+let uploaded=false;
+let saved=false;
+
+try{
+
+const file=$("image").files[0];
+
+if(!file)throw new Error("Акс интихоб кунед.");
+
+const types={
+"image/jpeg":"jpg",
+"image/png":"png",
+"image/webp":"webp"
+};
+
+if(!types[file.type])
+throw new Error("Танҳо JPG, PNG ё WEBP.");
+
+if(file.size>5242880)
+throw new Error("Акс бояд то 5 MB бошад.");
+
+const title=$("title").value.trim();
+
+if(!title)
+throw new Error("Номи рекламаро нависед.");
+
+const rawLink=$("link").value.trim();
+const link=rawLink?safeUrl(rawLink):null;
+
+if(rawLink&&!link)
+throw new Error("Истиноди HTTP ё HTTPS гузоред.");
+
+const start=$("startDate").value?
+new Date($("startDate").value):new Date();
+
+const end=$("endDate").value?
+new Date($("endDate").value):null;
+
+if(end&&end<=start)
+throw new Error("Анҷоми реклама бояд баъд аз оғоз бошад.");
+
+path=adminUser.id+"/"+crypto.randomUUID()+"."+types[file.type];
+
+status("Акс бор шуда истодааст...");
+
+const upload=await db.storage
+.from("banner-images")
+.upload(path,file,{contentType:file.type});
+
+if(upload.error)throw upload.error;
+
+uploaded=true;
+
+const imageUrl=db.storage
+.from("banner-images")
+.getPublicUrl(path).data.publicUrl;
+
+const result=await db.from("banners").insert({
+
+title,
+description:$("description").value.trim(),
+image_url:imageUrl,
+link_url:link,
+active:true,
+starts_at:start.toISOString(),
+ends_at:end?end.toISOString():null
+
+});
+
+if(result.error)throw result.error;
+
+saved=true;
+
+$("bannerForm").reset();
+$("preview").classList.add("hidden");
+
+if(previewUrl)URL.revokeObjectURL(previewUrl);
+
+previewUrl=null;
+
+status("Реклама бомуваффақият сабт шуд!");
+
+await loadBanners();
+
+}catch(e){
+
+if(uploaded&&!saved&&path){
+
+await db.storage
+.from("banner-images").remove([path]);
+
+}
+
+status(e.message);
+
+}finally{
+
+$("publish").disabled=false;
+
+}
+
+};
+
+async function loadBanners(){
+
+const {data,error}=await db.from("banners")
+.select("*")
+.order("created_at",{ascending:false})
+.limit(200);
+
+if(error){
+
+status(error.message);
+return;
+
+}
+
+bannerList=data||[];
+
+$("banners").innerHTML=bannerList.map((b,i)=>{
+
+const now=Date.now();
+
+const live=b.active&&
+new Date(b.starts_at).getTime()<=now&&
+(!b.ends_at||new Date(b.ends_at).getTime()>now);
+
+return `
+
+<div class="banner">
+
+<img src="${esc(safeUrl(b.image_url))}">
+
+<h3>${esc(b.title)}</h3>
+
+<p>${esc(b.description)}</p>
+
+<p>${live?"🟢 Намоён":
+b.active?"🟡 Интизори оғоз ё муҳлат гузаштааст":
+"🔴 Ғайрифаъол"}</p>
+
+<p>Оғоз: ${esc(new Date(b.starts_at).toLocaleString())}</p>
+
+<p>Анҷом: ${b.ends_at?
+esc(new Date(b.ends_at).toLocaleString()):
+"Бемаҳдуд"}</p>
+
+<button class="${b.active?"gray":"green"}"
+onclick="toggleBanner(${i})">
+
+${b.active?"Ғайрифаъол кардан":"Фаъол кардан"}
+
+</button>
+
+<button class="red"
+onclick="deleteBanner(${i})">
+
+Нест кардан
+
+</button>
+
+</div>
+
+`;
+
+}).join("")||"Ҳоло реклама нест.";
+
+}
+
+async function toggleBanner(i){
+
+const b=bannerList[i];
+
+if(!b||!adminUser)return;
+
+const {error}=await db.from("banners")
+.update({active:!b.active})
+.eq("id",b.id);
+
+if(error)status(error.message);
+else await loadBanners();
+
+}
+
+async function deleteBanner(i){
+
+const b=bannerList[i];
+
+if(!b||!adminUser)return;
+
+if(!confirm("Реклама нест карда шавад?"))return;
+
+const {error}=await db.from("banners")
+.delete()
+.eq("id",b.id);
+
+if(error){
+
+status(error.message);
+return;
+
+}
+
+const prefix="https://hxisbrjwhnjprmlztxqb.supabase.co/storage/v1/object/public/banner-images/";
+
+if(b.image_url.startsWith(prefix)){
+
+const path=decodeURIComponent(
+b.image_url.slice(prefix.length)
+);
+
+const result=await db.storage
+.from("banner-images").remove([path]);
+
+if(result.error)
+status("Реклама нест шуд, аммо акс дар Storage боқӣ монд.");
+
+}
+
+await loadBanners();
+
+}
+
+async function logout(){
+
+const {error}=await db.auth.signOut();
+
+if(error)status(error.message);
+else await checkAdmin();
+
+}
+
+checkAdmin();
+
+</script>
+</body>
+</html>
