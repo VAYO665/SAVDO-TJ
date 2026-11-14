@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAVDO TJ — Профил</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#f5f5f5;
+ font-family:Arial,sans-serif;
+ color:#222
+}
+header{
+ background:#ff6900;
+ color:white;
+ padding:18px;
+ font-size:23px;
+ font-weight:bold;
+ display:flex;
+ justify-content:space-between;
+ align-items:center
+}
+header a{color:white;text-decoration:none}
+main{max-width:900px;margin:auto;padding:14px}
+.card{
+ background:white;
+ border-radius:18px;
+ padding:20px;
+ margin-bottom:14px;
+ box-shadow:0 2px 10px #00000009
+}
+.avatar{
+ width:100px;
+ height:100px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#fff0e5;
+ margin:auto;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:50px
+}
+.center{text-align:center}
+.stars{color:#ffab00;font-size:26px}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+ margin:20px 0
+}
+.stat{
+ background:#f6f6f6;
+ padding:15px 5px;
+ border-radius:12px;
+ text-align:center
+}
+.stat strong{font-size:23px;display:block}
+button{
+ background:#ff6900;
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:13px;
+ font-size:16px;
+ cursor:pointer
+}
+button:disabled{opacity:.5}
+.full{width:100%;margin-top:10px}
+.gray{background:#eeeeee;color:#333}
+.red{background:#fff0f0;color:#c62828}
+input,textarea,select{
+ width:100%;
+ padding:13px;
+ border:1px solid #ddd;
+ border-radius:10px;
+ font-size:16px;
+ margin:7px 0
+}
+textarea{min-height:90px}
+label{font-weight:bold}
+.products{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px
+}
+.product{
+ border:1px solid #eee;
+ border-radius:12px;
+ overflow:hidden;
+ cursor:pointer
+}
+.product img{
+ width:100%;
+ height:160px;
+ object-fit:cover
+}
+.product div{padding:10px}
+.price{
+ color:#ff6900;
+ font-size:20px;
+ font-weight:bold
+}
+.review{
+ padding:14px 0;
+ border-bottom:1px solid #eee
+}
+.muted{color:#888;font-size:13px}
+.hidden{display:none!important}
+#ratingButtons{
+ display:flex;
+ justify-content:center;
+ gap:5px
+}
+#ratingButtons button{
+ background:transparent;
+ color:#ccc;
+ font-size:34px;
+ padding:5px
+}
+#ratingButtons button.selected{
+ color:#ffab00
+}
+#notice{
+ position:fixed;
+ bottom:20px;
+ left:5%;
+ width:90%;
+ background:#222;
+ color:white;
+ padding:15px;
+ border-radius:12px;
+ z-index:100;
+ text-align:center
+}
+@media(min-width:700px){
+ .products{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <a href="./index.html">‹ SAVDO TJ</a>
+ <span>Профил</span>
+</header>
+
+<main>
+
+<section class="card center">
+ <div class="avatar" id="avatar">👤</div>
+ <h2 id="sellerName">Фурӯшанда</h2>
+ <p id="sellerCity"></p>
+ <p id="sellerBio"></p>
+ <div class="stars" id="sellerStars">☆☆☆☆☆</div>
+ <h3 id="sellerRating">Рейтинг нест</h3>
+ <p class="muted" id="joined"></p>
+
+ <div class="stats">
+  <div class="stat">
+   <strong id="adsCount">0</strong>
+   Эълонҳо
+  </div>
+  <div class="stat">
+   <strong id="reviewCount">0</strong>
+   Шарҳҳо
+  </div>
+  <div class="stat">
+   <strong id="ratingCount">—</strong>
+   Рейтинг
+  </div>
+ </div>
+
+ <button id="editButton"
+ class="full hidden"
+ onclick="openEdit()">
+ Таҳрири профил
+ </button>
+
+ <button id="reviewButton"
+ class="full hidden"
+ onclick="openReview()">
+ ⭐ Баҳо додан
+ </button>
+
+ <button id="reportButton"
+ class="full red hidden"
+ onclick="openReport()">
+ Шикоят кардан
+ </button>
+</section>
+
+<section id="editBox" class="card hidden">
+ <h2>Таҳрири профил</h2>
+
+ <form id="editForm">
+  <label>Ном</label>
+  <input id="fullName" maxlength="80" required>
+
+  <label>Шаҳр</label>
+  <input id="city" maxlength="80">
+
+  <label>Дар бораи худ</label>
+  <textarea id="bio" maxlength="1000"></textarea>
+
+  <label>Истиноди акси профил</label>
+  <input id="avatarUrl" type="url"
+  placeholder="https://...">
+
+  <button class="full">Сабт кардан</button>
+ </form>
+</section>
+
+<section id="reviewBox" class="card hidden">
+ <h2>Ба фурӯшанда баҳо диҳед</h2>
+
+ <div id="ratingButtons"></div>
+
+ <form id="reviewForm">
+  <textarea id="comment"
+  maxlength="2000"
+  placeholder="Шарҳи шумо..."></textarea>
+
+  <button class="full">
+   Сабти баҳогузорӣ
+  </button>
+ </form>
+</section>
+
+<section id="reportBox" class="card hidden">
+ <h2>Шикоят</h2>
+
+ <form id="reportForm">
+  <textarea id="reason"
+  maxlength="2000"
+  required
+  placeholder="Сабаби шикоятро нависед">
+  </textarea>
+
+  <button class="full red">
+   Фиристодани шикоят
+  </button>
+ </form>
+</section>
+
+<section class="card">
+ <h2>Эълонҳои фурӯшанда</h2>
+ <div id="products" class="products"></div>
+ <p id="noAds" class="muted hidden">
+  Эълон вуҷуд надорад.
+ </p>
+</section>
+
+<section class="card">
+ <h2>Шарҳҳои корбарон</h2>
+ <div id="reviews"></div>
+</section>
+
+</main>
+
+<div id="notice" class="hidden"></div>
+
+<script>
+
+const db = supabase.createClient(
+ "https://hxisbrjwhnjprmlztxqb.supabase.co",
+ "sb_publishable_P5V4lNjdiqYoDm-2QDPZZg_yIufHvL6"
+);
+
+const $ = id => document.getElementById(id);
+
+let user = null;
+let sellerId = null;
+let profile = null;
+let selectedRating = 5;
+let noticeTimer;
+
+function esc(value){
+ return String(value ?? "").replace(
+ /[&<>"']/g,
+ c => ({
+ "&":"&amp;",
+ "<":"&lt;",
+ ">":"&gt;",
+ '"':"&quot;",
+ "'":"&#39;"
+ })[c]);
+}
+
+function safeUrl(value){
+ try{
+  const url = new URL(value);
+  return url.protocol === "https:"
+   ? url.href : "";
+ }catch{
+  return "";
+ }
+}
+
+function notify(text){
+ $("notice").textContent = text;
+ $("notice").classList.remove("hidden");
+ clearTimeout(noticeTimer);
+ noticeTimer = setTimeout(()=>{
+  $("notice").classList.add("hidden");
+ },4000);
+}
+
+function photo(path){
+ if(!path) return "";
+ return db.storage
+ .from("ad-images")
+ .getPublicUrl(path).data.publicUrl;
+}
+
+function requireLogin(){
+ if(user) return true;
+ notify("Аввал ба аккаунти худ дароед.");
+ return false;
+}
+
+async function start(){
+
+ const {data,error} = await db.auth.getUser();
+
+ user = error ? null : data.user;
+
+ sellerId = new URLSearchParams(
+ location.search
+ ).get("id") || user?.id;
+
+ if(!sellerId){
+  notify("Аввал ба аккаунт дароед.");
+  return;
+ }
+
+ if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sellerId)){
+  notify("Профил нодуруст аст.");
+  return;
+ }
+
+ if(user?.id === sellerId){
+  $("editButton").classList.remove("hidden");
+ }else{
+  $("reviewButton").classList.remove("hidden");
+  $("reportButton").classList.remove("hidden");
+ }
+
+ await Promise.all([
+  loadProfile(),
+  loadAds(),
+  loadReviews()
+ ]);
+}
+
+async function loadProfile(){
+
+ const {data,error} = await db
+ .from("profiles")
+ .select("*")
+ .eq("id",sellerId)
+ .maybeSingle();
+
+ if(error){
+  notify(error.message);
+  return;
+ }
+
+ profile = data;
+
+ if(!profile){
+  $("sellerName").textContent = "Профил ёфт нашуд";
+  return;
+ }
+
+ $("sellerName").textContent =
+ profile.full_name || "Фурӯшанда";
+
+ $("sellerCity").textContent =
+ profile.city ? "📍 "+profile.city : "";
+
+ $("sellerBio").textContent =
+ profile.bio || "";
+
+ const avatar = safeUrl(profile.avatar_url);
+
+ $("avatar").innerHTML = avatar
+ ? `<img class="avatar" src="${esc(avatar)}" alt="Профил">`
+ : "👤";
+
+ if(profile.created_at){
+  $("joined").textContent =
+  "Дар SAVDO TJ аз "+
+  new Date(profile.created_at)
+  .toLocaleDateString("tg-TJ");
+ }
+}
+
+async function loadAds(){
+
+ const {data,error,count} = await db
+ .from("ads")
+ .select("*",{count:"exact"})
+ .eq("user_id",sellerId)
+ .eq("active",true)
+ .eq("blocked",false)
+ .order("created_at",{ascending:false})
+ .limit(100);
+
+ if(error){
+  notify(error.message);
+  return;
+ }
+
+ $("adsCount").textContent = count ?? 0;
+
+ $("noAds").classList.toggle(
+ "hidden",data.length>0
+ );
+
+ $("products").innerHTML = data.map(ad=>`
+
+ <div class="product"
+ onclick="location.href='./index.html?ad=${encodeURIComponent(ad.id)}'">
+
+ ${ad.images?.length
+ ? `<img src="${esc(photo(ad.images[0]))}" alt="">`
+ : ""}
+
+ <div>
+  <div class="price">
+   ${esc(ad.price)} сомонӣ
+  </div>
+  <strong>${esc(ad.title)}</strong>
+  <p class="muted">${esc(ad.city)}</p>
+ </div>
+
+ </div>
+
+ `).join("");
+}
+
+async function loadReviews(){
+
+ const {data:rating,error:ratingError} = await db
+ .from("seller_ratings")
+ .select("*")
+ .eq("seller_id",sellerId)
+ .maybeSingle();
+
+ if(ratingError){
+  notify(ratingError.message);
+  return;
+ }
+
+ const average = Number(
+ rating?.average_rating || 0
+ );
+
+ $("ratingCount").textContent =
+ average ? average.toFixed(1) : "—";
+
+ $("sellerRating").textContent =
+ average ? average.toFixed(1)+" аз 5"
+ : "Рейтинг нест";
+
+ $("sellerStars").textContent =
+ "★".repeat(Math.round(average))+
+ "☆".repeat(5-Math.round(average));
+
+ $("reviewCount").textContent =
+ rating?.total_reviews || 0;
+
+ const {data,error} = await db
+ .from("reviews")
+ .select("*")
+ .eq("seller_id",sellerId)
+ .order("created_at",{ascending:false})
+ .limit(100);
+
+ if(error){
+  notify(error.message);
+  return;
+ }
+
+ if(!data.length){
+  $("reviews").textContent =
+  "Ҳоло шарҳ вуҷуд надорад.";
+  return;
+ }
+
+ const ids = [...new Set(
+ data.map(r=>r.reviewer_id)
+ )];
+
+ const {data:names} = await db
+ .from("profiles")
+ .select("id,full_name")
+ .in("id",ids);
+
+ const nameMap = new Map(
+ (names || []).map(p=>[p.id,p.full_name])
+ );
+
+ $("reviews").innerHTML = data.map(r=>`
+
+ <div class="review">
+
+ <strong>
+ ${esc(nameMap.get(r.reviewer_id)||"Корбар")}
+ </strong>
+
+ <div class="stars">
+ ${"★".repeat(r.rating)}
+ ${"☆".repeat(5-r.rating)}
+ </div>
+
+ <p>${esc(r.comment)}</p>
+
+ <span class="muted">
+ ${new Date(r.created_at).toLocaleDateString()}
+ </span>
+
+ ${r.reviewer_id===user?.id
+ ? `<button class="gray"
+ onclick="deleteReview('${esc(r.id)}')">
+ Нест кардан
+ </button>`
+ : ""}
+
+ </div>
+
+ `).join("");
+}
+
+function openEdit(){
+
+ if(user?.id!==sellerId) return;
+
+ $("fullName").value =
+ profile?.full_name || "";
+
+ $("city").value = profile?.city || "";
+ $("bio").value = profile?.bio || "";
+ $("avatarUrl").value =
+ profile?.avatar_url || "";
+
+ $("editBox").classList.remove("hidden");
+ $("editBox").scrollIntoView({
+ behavior:"smooth"
+ });
+}
+
+$("editForm").onsubmit = async e=>{
+
+ e.preventDefault();
+
+ if(user?.id!==sellerId) return;
+
+ const avatar = $("avatarUrl").value.trim();
+
+ if(avatar && !safeUrl(avatar)){
+  notify("Истиноди HTTPS ворид кунед.");
+  return;
+ }
+
+ const values = {
+  full_name:$("fullName").value.trim(),
+  city:$("city").value.trim(),
+  bio:$("bio").value.trim(),
+  avatar_url:avatar || null
+ };
+
+ if(!values.full_name){
+  notify("Номро ворид кунед.");
+  return;
+ }
+
+ const result = profile
+ ? await db.from("profiles")
+   .update(values).eq("id",user.id)
+ : await db.from("profiles")
+   .insert({id:user.id,...values});
+
+ if(result.error){
+  notify(result.error.message);
+  return;
+ }
+
+ $("editBox").classList.add("hidden");
+ await loadProfile();
+ notify("Профил сабт шуд!");
+};
+
+function drawStars(){
+
+ $("ratingButtons").innerHTML =
+ [1,2,3,4,5].map(n=>`
+
+ <button type="button"
+ class="${n<=selectedRating?"selected":""}"
+ onclick="setRating(${n})">★</button>
+
+ `).join("");
+}
+
+function setRating(n){
+ selectedRating = n;
+ drawStars();
+}
+
+async function openReview(){
+
+ if(!requireLogin()) return;
+ if(user.id===sellerId) return;
+
+ const {data,error} = await db
+ .from("reviews")
+ .select("*")
+ .eq("seller_id",sellerId)
+ .eq("reviewer_id",user.id)
+ .maybeSingle();
+
+ if(error){
+  notify(error.message);
+  return;
+ }
+
+ selectedRating = data?.rating || 5;
+ $("comment").value = data?.comment || "";
+
+ drawStars();
+
+ $("reviewBox").classList.remove("hidden");
+ $("reviewBox").scrollIntoView({
+ behavior:"smooth"
+ });
+}
+
+$("reviewForm").onsubmit = async e=>{
+
+ e.preventDefault();
+
+ if(!requireLogin()) return;
+ if(user.id===sellerId) return;
+
+ const {data:old,error:readError} = await db
+ .from("reviews")
+ .select("id")
+ .eq("seller_id",sellerId)
+ .eq("reviewer_id",user.id)
+ .maybeSingle();
+
+ if(readError){
+  notify(readError.message);
+  return;
+ }
+
+ const values = {
+  rating:selectedRating,
+  comment:$("comment").value.trim()
+ };
+
+ const result = old
+ ? await db.from("reviews")
+   .update(values).eq("id",old.id)
+ : await db.from("reviews").insert({
+   seller_id:sellerId,
+   reviewer_id:user.id,
+   ...values
+ });
+
+ if(result.error){
+  notify(result.error.message);
+  return;
+ }
+
+ $("reviewBox").classList.add("hidden");
+ await loadReviews();
+ notify("Баҳогузорӣ сабт шуд!");
+};
+
+async function deleteReview(id){
+
+ if(!requireLogin()) return;
+ if(!confirm("Шарҳ нест карда шавад?")) return;
+
+ const {error} = await db
+ .from("reviews")
+ .delete()
+ .eq("id",id)
+ .eq("reviewer_id",user.id);
+
+ if(error){
+  notify(error.message);
+  return;
+ }
+
+ await loadReviews();
+ notify("Шарҳ нест карда шуд.");
+}
+
+function openReport(){
+
+ if(!requireLogin()) return;
+ if(user.id===sellerId) return;
+
+ $("reportBox").classList.remove("hidden");
+ $("reportBox").scrollIntoView({
+ behavior:"smooth"
+ });
+}
+
+$("reportForm").onsubmit = async e=>{
+
+ e.preventDefault();
+
+ if(!requireLogin()) return;
+ if(user.id===sellerId) return;
+
+ const reason = $("reason").value.trim();
+
+ if(!reason){
+  notify("Сабаби шикоятро нависед.");
+  return;
+ }
+
+ const {error} = await db
+ .from("seller_reports")
+ .insert({
+  seller_id:sellerId,
+  reporter_id:user.id,
+  reason:reason
+ });
+
+ if(error){
+  notify(error.message);
+  return;
+ }
+
+ $("reason").value="";
+ $("reportBox").classList.add("hidden");
+
+ notify("Шикоят фиристода шуд.");
+};
+
+start();
+
+</script>
+</body>
+   </html>
