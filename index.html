@@ -5,69 +5,304 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SAVDO TJ — Бозори Тоҷикистон</title>
-
+<script>
+window.recoveryLink =
+new URLSearchParams(location.hash.slice(1)).get("type")==="recovery";
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f5f6f8;font-family:Arial,sans-serif;color:#222}
-header{background:white;position:sticky;top:0;z-index:10;box-shadow:0 2px 10px #00000010}
-.top{max-width:1250px;margin:auto;padding:15px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.logo{font-size:30px;font-weight:900;color:#ff6500;cursor:pointer}
+:root{
+--orange:#ff6500;
+--bg:#f5f6f8;
+--text:#202124;
+}
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:Arial,sans-serif;
+}
+header{
+background:white;
+position:sticky;
+top:0;
+z-index:20;
+border-bottom:1px solid #eee;
+}
+.top{
+max-width:1300px;
+margin:auto;
+padding:15px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+}
+.logo{
+font-size:30px;
+font-weight:900;
+color:var(--orange);
+cursor:pointer;
+}
 .logo span{color:#222}
-button{border:0;background:#ff6500;color:white;padding:13px 18px;border-radius:12px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:wait}
+button{
+border:0;
+border-radius:12px;
+background:var(--orange);
+color:white;
+padding:13px 16px;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+}
+button:disabled{opacity:.5}
 .gray{background:#eee;color:#222}
 .red{background:#dc2626}
-main{max-width:1250px;margin:auto;padding:18px 15px 100px}
-.hero{background:linear-gradient(120deg,#ff6500,#ffad42);color:white;padding:30px;border-radius:24px;margin-bottom:20px}
-.hero h1{margin:0 0 12px;font-size:30px}
-.search{display:flex;background:white;padding:7px;border-radius:15px;gap:8px;margin-top:20px}
-.search input{border:0;margin:0;flex:1;min-width:0}
-input,select,textarea{width:100%;padding:13px;border:1px solid #ddd;border-radius:10px;font-size:15px;background:#fafafa;margin:7px 0 13px}
-textarea{min-height:100px}
-.categories{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
-.category{background:white;padding:18px 5px;border-radius:16px;text-align:center;cursor:pointer;font-weight:bold;font-size:13px}
-.category:hover,.category.active{background:#ffe4cc;color:#e65b00}
-.category span{display:block;font-size:33px;margin-bottom:10px}
-.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.products{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
-.product{background:white;border-radius:16px;overflow:hidden;position:relative;cursor:pointer}
-.product img{width:100%;height:210px;object-fit:cover;background:#eee}
-.info{padding:14px}
-.info h3{font-size:16px;margin:8px 0;overflow-wrap:anywhere}
-.price{color:#ff6500;font-size:23px;font-weight:900}
-small{color:#888}
-.heart{position:absolute;top:10px;right:10px;border-radius:50%;background:white;color:#ff6500;padding:10px;font-size:20px}
-.card{background:white;padding:22px;border-radius:20px;margin-bottom:15px}
-.hidden{display:none!important}
+.green{background:#16a34a}
 .full{width:100%}
-.row{display:flex;gap:10px;flex-wrap:wrap}
+.hidden{display:none!important}
+main{
+max-width:1300px;
+margin:auto;
+padding:18px 15px 100px;
+}
+.hero{
+background:linear-gradient(120deg,#ff6500,#ffac42);
+color:white;
+border-radius:24px;
+padding:30px;
+margin-bottom:20px;
+}
+.hero h1{margin:0 0 10px}
+.search{
+display:flex;
+gap:8px;
+padding:7px;
+background:white;
+border-radius:14px;
+margin-top:20px;
+}
+.search input{
+margin:0;
+border:0;
+min-width:0;
+flex:1;
+}
+input,select,textarea{
+width:100%;
+padding:13px;
+border:1px solid #ddd;
+border-radius:11px;
+background:#fafafa;
+font-size:15px;
+margin:7px 0 14px;
+}
+textarea{min-height:100px}
+.categories{
+display:grid;
+grid-template-columns:repeat(8,1fr);
+gap:10px;
+margin-bottom:20px;
+}
+.category{
+background:white;
+padding:17px 5px;
+border-radius:15px;
+text-align:center;
+font-size:13px;
+font-weight:bold;
+cursor:pointer;
+}
+.category span{
+display:block;
+font-size:32px;
+margin-bottom:8px;
+}
+.category.active{
+background:#ffe4cc;
+color:#e65b00;
+}
+.filters{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+}
+.products{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+}
+.product{
+background:white;
+border-radius:17px;
+overflow:hidden;
+position:relative;
+cursor:pointer;
+box-shadow:0 2px 8px #00000008;
+}
+.product img{
+width:100%;
+height:220px;
+object-fit:cover;
+background:#eee;
+}
+.placeholder{
+height:220px;
+display:grid;
+place-items:center;
+font-size:50px;
+background:#eee;
+}
+.info{padding:14px}
+.info h3{
+font-size:16px;
+margin:8px 0;
+overflow-wrap:anywhere;
+}
+.price{
+color:var(--orange);
+font-size:23px;
+font-weight:900;
+}
+small{color:#888}
+.heart{
+position:absolute;
+top:10px;
+right:10px;
+background:white;
+color:var(--orange);
+border-radius:50%;
+font-size:22px;
+padding:8px 12px;
+}
+.card{
+background:white;
+padding:22px;
+border-radius:20px;
+margin-bottom:15px;
+}
+.formCard{
+max-width:650px;
+margin:0 auto 15px;
+}
+.row{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
 .row>*{flex:1}
-.preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.preview img{width:100%;height:100px;object-fit:cover;border-radius:10px}
-dialog{border:0;border-radius:22px;padding:20px;width:95%;max-width:650px;max-height:90vh;overflow:auto}
-dialog::backdrop{background:#0009}
-.close{float:right;background:#eee;color:#222}
-.detailPhoto{width:100%;height:340px;object-fit:contain;background:#eee;border-radius:15px}
-.thumbs{display:flex;gap:7px;overflow:auto;margin:10px 0}
-.thumbs img{width:65px;height:65px;object-fit:cover;border-radius:8px;cursor:pointer}
-.notice{background:#fff0df;padding:14px;border-radius:10px;margin:10px 0}
+.notice{
+background:#fff0df;
+padding:14px;
+border-radius:12px;
+margin-bottom:15px;
+overflow-wrap:anywhere;
+}
 .notice:empty{display:none}
-.chatMessage{background:#eee;padding:12px;border-radius:12px;margin:10px 0;overflow-wrap:anywhere;white-space:pre-wrap}
-.mine{background:#ffe4cc;text-align:right}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:white;border-top:1px solid #ddd;padding:10px;z-index:20}
-nav button{background:white;color:#444;padding:5px;font-size:12px}
-nav span{display:block;font-size:23px;margin-bottom:5px}
-.empty{text-align:center;padding:40px;color:#888}
+.preview{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;
+margin-bottom:15px;
+}
+.preview img{
+width:100%;
+height:100px;
+object-fit:cover;
+border-radius:10px;
+}
+dialog{
+width:95%;
+max-width:650px;
+max-height:90vh;
+overflow:auto;
+border:0;
+border-radius:22px;
+padding:20px;
+}
+dialog::backdrop{background:#0009}
+.close{
+float:right;
+background:#eee;
+color:#222;
+}
+.detailPhoto{
+width:100%;
+height:350px;
+object-fit:contain;
+background:#eee;
+border-radius:15px;
+}
+.thumbs{
+display:flex;
+gap:8px;
+overflow:auto;
+margin:10px 0;
+}
+.thumbs img{
+width:65px;
+height:65px;
+object-fit:cover;
+border-radius:8px;
+cursor:pointer;
+}
+.empty{
+padding:35px;
+text-align:center;
+color:#888;
+}
+.chatMessage{
+padding:13px;
+border-radius:13px;
+background:#eee;
+margin:8px 0;
+white-space:pre-wrap;
+overflow-wrap:anywhere;
+}
+.mine{
+background:#ffe4cc;
+text-align:right;
+}
+nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+border-top:1px solid #ddd;
+display:flex;
+justify-content:space-around;
+padding:10px 4px;
+z-index:30;
+}
+nav button{
+background:white;
+color:#444;
+padding:5px;
+font-size:12px;
+}
+nav span{
+display:block;
+font-size:24px;
+margin-bottom:5px;
+}
+footer{
+text-align:center;
+color:#888;
+padding:30px 10px;
+}
 @media(max-width:800px){
 .categories{grid-template-columns:repeat(4,1fr)}
 .products{grid-template-columns:repeat(2,1fr)}
-.product img{height:170px}
 .filters{grid-template-columns:repeat(2,1fr)}
+.product img,.placeholder{height:170px}
 .hero{padding:20px}
-.hero h1{font-size:23px}
-.logo{font-size:25px}
+.hero h1{font-size:24px}
+.logo{font-size:24px}
+.top button{padding:11px}
+.detailPhoto{height:270px}
 }
 </style>
 </head>
@@ -76,23 +311,27 @@ nav span{display:block;font-size:23px;margin-bottom:5px}
 
 <header>
 <div class="top">
-<div class="logo" onclick="goHome()">SAVDO<span>TJ</span></div>
-<div class="row">
-<button onclick="openPost()">＋ Эълон</button>
-<button class="gray" onclick="openAccount()">👤 Аккаунт</button>
+<div class="logo" onclick="goHome()">
+SAVDO<span>TJ</span>
 </div>
+
+<button onclick="openPost()">＋ Эълон</button>
+<button class="gray" onclick="openAccount()">👤</button>
 </div>
 </header>
 
 <main>
 
-<div id="notice" class="notice"></div>
+<div id="notice" class="notice" role="status"></div>
+
+<!-- HOME -->
 
 <section id="home">
 
 <div class="hero">
-<h1>Ҳама чизро дар SAVDO TJ ёбед!</h1>
-<p>Харед, фурӯшед ва эълонҳои худро ройгон ҷойгир кунед.</p>
+<h1>Бозори Тоҷикистон</h1>
+<p>Харед, фурӯшед ва эълонҳои худро ройгон ҷойгир кунед!</p>
+
 <div class="search">
 <input id="search" placeholder="Чиро ҷустуҷӯ мекунед?">
 <button onclick="loadAds()">🔍</button>
@@ -100,29 +339,48 @@ nav span{display:block;font-size:23px;margin-bottom:5px}
 </div>
 
 <h2>Категорияҳо</h2>
+
 <div id="categories" class="categories"></div>
 
 <div class="filters">
+
 <select id="cityFilter"></select>
+
 <select id="sort">
 <option value="new">Навтарин</option>
 <option value="cheap">Арзонтарин</option>
 <option value="expensive">Қиматтарин</option>
 </select>
+
 <input id="minPrice" type="number" min="0" placeholder="Нарх аз">
+
 <input id="maxPrice" type="number" min="0" placeholder="Нарх то">
+
 </div>
 
-<button class="gray" onclick="loadAds()">Ҷустуҷӯ бо филтр</button>
+<button class="gray" onclick="loadAds()">
+Ҷустуҷӯ бо филтр
+</button>
 
 <h2 id="listTitle">Эълонҳои нав</h2>
+
 <div id="products" class="products"></div>
-<button id="more" class="full gray hidden" onclick="loadMore()">Эълонҳои бештар</button>
+
+<br>
+
+<button id="more" class="gray full hidden" onclick="loadAds(true)">
+Эълонҳои бештар
+</button>
+
+<footer>SAVDO TJ © 2026</footer>
 
 </section>
 
+<!-- POST -->
+
 <section id="post" class="hidden">
-<div class="card">
+
+<div class="card formCard">
 
 <h2 id="postTitle">Эълони нав</h2>
 
@@ -146,19 +404,19 @@ nav span{display:block;font-size:23px;margin-bottom:5px}
 <option>Истифодашуда</option>
 </select>
 
-<label>Рақами телефон</label>
+<label>Телефон</label>
 <input id="phone" type="tel" placeholder="+992900000000" required>
 
 <label>Тавсифи эълон</label>
 <textarea id="description" maxlength="5000" required></textarea>
 
-<label>Аксҳо — то 10 дона</label>
+<label>📷 Аксҳо аз галерея</label>
+<input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
 
-<input id="photos" type="file"
-accept="image/jpeg,image/png,image/webp" multiple>
+<label>📸 Акс гирифтан</label>
+<input id="camera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment">
 
-<input id="camera" type="file"
-accept="image/jpeg,image/png,image/webp" capture="environment">
+<p>То 10 акс. Ҳар акс то 5 MB.</p>
 
 <div id="preview" class="preview"></div>
 
@@ -170,21 +428,27 @@ accept="image/jpeg,image/png,image/webp" capture="environment">
 </div>
 </section>
 
+<!-- ACCOUNT -->
+
 <section id="account" class="hidden">
 <div id="accountContent"></div>
 </section>
 
+<!-- CHAT -->
+
 <section id="chat" class="hidden">
-<div class="card">
+<div class="card formCard">
 <h2>💬 Паёмҳо</h2>
 <div id="conversations"></div>
 <div id="chatContent"></div>
 </div>
 </section>
 
+<!-- ADMIN -->
+
 <section id="admin" class="hidden">
 <div class="card">
-<h2>🛡️ Admin</h2>
+<h2>🛡️ SAVDO TJ Admin</h2>
 <div id="adminContent"></div>
 </div>
 </section>
@@ -197,26 +461,47 @@ accept="image/jpeg,image/png,image/webp" capture="environment">
 </dialog>
 
 <nav>
-<button onclick="goHome()"><span>🏠</span>Асосӣ</button>
-<button onclick="showFavorites()"><span>❤️</span>Дӯстдошта</button>
-<button onclick="openPost()"><span>➕</span>Эълон</button>
-<button onclick="openChats()"><span>💬</span>Чат</button>
-<button onclick="openAccount()"><span>👤</span>Аккаунт</button>
+
+<button onclick="goHome()">
+<span>🏠</span>Асосӣ
+</button>
+
+<button onclick="showFavorites()">
+<span>❤️</span>Дӯстдошта
+</button>
+
+<button onclick="openPost()">
+<span>➕</span>Эълон
+</button>
+
+<button onclick="openChats()">
+<span>💬</span>Чат
+</button>
+
+<button onclick="openAccount()">
+<span>👤</span>Аккаунт
+</button>
+
 </nav>
 
 <script>
 
-// МАЪЛУМОТИ SUPABASE-И НАВ
+// SUPABASE SAVDO TJ
 
-const SUPABASE_URL = "SUPABASE_URL";
-const SUPABASE_KEY = "SUPABASE_KEY";
+const SUPABASE_URL =
+"https://hxisbrjwhnjprmlztxqb.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_P5V4lNjdiqYoDm-2QDPZZg_yIufHvL6";
 
 const db = supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 const $ = id => document.getElementById(id);
+
+const REDIRECT = location.origin + location.pathname;
 
 let user = null;
 let ads = [];
@@ -224,982 +509,1366 @@ let favorites = new Set();
 let selectedCategory = "";
 let selectedFiles = [];
 let oldImages = [];
+let previewUrls = [];
 let editId = null;
 let favoriteMode = false;
 let offset = 0;
+let listVersion = 0;
 let chatAd = null;
 let chatUser = null;
 let chatTimer = null;
-let listVersion = 0;
 let recoveryMode = false;
+let recoveryUser = null;
+let publishing = false;
 
 const categories = [
- ["Ҳама","📦"],
- ["Мошин","🚘"],
- ["Хона ва замин","🏠"],
- ["Телефон","📱"],
- ["Компютер","💻"],
- ["Электроника","📺"],
- ["Либос","👕"],
- ["Пойафзол","👟"],
- ["Мебел","🛋️"],
- ["Сохтмон","🧱"],
- ["Ҷойҳои корӣ","💼"],
- ["Хизматрасонӣ","🛠️"],
- ["Ҳайвонот","🐄"],
- ["Кӯдакон","🧸"],
- ["Варзиш","⚽"],
- ["Дигар","📦"]
+["Ҳама","📦"],
+["Мошин","🚘"],
+["Хона ва замин","🏠"],
+["Телефон","📱"],
+["Компютер","💻"],
+["Электроника","📺"],
+["Либос","👕"],
+["Пойафзол","👟"],
+["Мебел","🛋️"],
+["Сохтмон","🧱"],
+["Ҷойҳои корӣ","💼"],
+["Хизматрасонӣ","🛠️"],
+["Ҳайвонот","🐄"],
+["Кӯдакон","🧸"],
+["Варзиш","⚽"],
+["Дигар","📦"]
 ];
 
 const cities = [
- "Душанбе","Хуҷанд","Бохтар","Кӯлоб",
- "Ҳисор","Ваҳдат","Турсунзода","Панҷакент",
- "Истаравшан","Исфара","Конибодом",
- "Хоруғ","Данғара","Рашт","Дигар"
+"Душанбе","Хуҷанд","Бохтар","Кӯлоб",
+"Ҳисор","Ваҳдат","Турсунзода",
+"Панҷакент","Истаравшан","Исфара",
+"Конибодом","Хоруғ","Данғара",
+"Рашт","Дигар"
 ];
 
 function esc(v){
- return String(v??"").replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",
- '"':"&quot;","'":"&#39;"
- })[c]);
+return String(v??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+})[c]);
 }
 
 function notice(text){
- $("notice").textContent=text||"";
+$("notice").textContent=text||"";
 }
 
 function show(id){
- clearInterval(chatTimer);
- ["home","post","account","chat","admin"]
- .forEach(x=>$(x).classList.toggle("hidden",x!==id));
- notice("");
- window.scrollTo(0,0);
+clearInterval(chatTimer);
+["home","post","account","chat","admin"]
+.forEach(x=>$(x).classList.toggle("hidden",x!==id));
+notice("");
+window.scrollTo(0,0);
+}
+
+function money(value){
+return Number(value).toLocaleString("ru-RU")+" сомонӣ";
 }
 
 function photo(path){
- if(!path)return "";
- return db.storage.from("ad-images")
- .getPublicUrl(path).data.publicUrl;
-}
-
-function money(n){
- return Number(n).toLocaleString("ru-RU")+" сомонӣ";
+return db.storage.from("ad-images")
+.getPublicUrl(path).data.publicUrl;
 }
 
 function setup(){
- $("categories").innerHTML=categories.map(([name,icon],i)=>`
- <div class="category" onclick="selectCategory(${i})">
- <span>${icon}</span>${esc(name)}
- </div>
- `).join("");
 
- $("category").innerHTML=categories.slice(1)
- .map(([name])=>`<option>${esc(name)}</option>`).join("");
+$("categories").innerHTML=categories.map(([name,icon],i)=>`
+<div class="category ${i===0?"active":""}"
+onclick="selectCategory(${i})">
+<span>${icon}</span>${esc(name)}
+</div>
+`).join("");
 
- $("city").innerHTML=cities
- .map(c=>`<option>${esc(c)}</option>`).join("");
+$("category").innerHTML=categories.slice(1)
+.map(([name])=>`<option>${esc(name)}</option>`)
+.join("");
 
- $("cityFilter").innerHTML=
- '<option value="">Ҳамаи шаҳрҳо</option>'+
- $("city").innerHTML;
+$("city").innerHTML=cities
+.map(c=>`<option>${esc(c)}</option>`)
+.join("");
+
+$("cityFilter").innerHTML=
+'<option value="">Ҳамаи шаҳрҳо</option>'+
+$("city").innerHTML;
+
 }
 
 function selectCategory(i){
- selectedCategory=i?categories[i][0]:"";
- document.querySelectorAll(".category")
- .forEach((el,j)=>el.classList.toggle("active",i===j));
- favoriteMode=false;
- loadAds();
+
+selectedCategory=i?categories[i][0]:"";
+
+document.querySelectorAll(".category")
+.forEach((el,j)=>el.classList.toggle("active",i===j));
+
+favoriteMode=false;
+loadAds();
+
 }
 
 async function refreshFavorites(){
- favorites=new Set();
- if(!user)return;
 
- const {data,error}=await db.from("favorites")
- .select("ad_id").eq("user_id",user.id);
+favorites=new Set();
 
- if(!error){
- favorites=new Set((data||[]).map(x=>x.ad_id));
- }
+if(!user)return;
+
+const {data,error}=await db.from("favorites")
+.select("ad_id")
+.eq("user_id",user.id);
+
+if(!error)
+favorites=new Set((data||[]).map(x=>x.ad_id));
+
 }
 
 async function loadAds(append=false){
 
- const version=++listVersion;
+const version=++listVersion;
 
- if(!append){
- offset=0;
- ads=[];
- $("products").textContent="Боргирӣ...";
- }
+$("more").disabled=true;
 
- try{
+if(!append){
+offset=0;
+ads=[];
+$("products").textContent="Боргирӣ...";
+}
 
- let q=db.from("ads").select("*")
- .eq("active",true).eq("blocked",false);
+try{
 
- if(favoriteMode){
- if(!favorites.size){
- $("products").innerHTML=
- '<div class="empty">Эълони дӯстдошта нест.</div>';
- $("more").classList.add("hidden");
- return;
- }
- q=q.in("id",[...favorites]);
- }
+let q=db.from("ads")
+.select("*")
+.eq("active",true)
+.eq("blocked",false);
 
- if(selectedCategory&&!favoriteMode)
- q=q.eq("category",selectedCategory);
+if(favoriteMode){
 
- const city=$("cityFilter").value;
- if(city)q=q.eq("city",city);
+if(!favorites.size){
+ads=[];
+renderAds();
+$("more").classList.add("hidden");
+return;
+}
 
- const search=$("search").value.trim();
- if(search)q=q.ilike("title","%"+search+"%");
+q=q.in("id",[...favorites]);
 
- if($("minPrice").value!=="")
- q=q.gte("price",Number($("minPrice").value));
+}else if(selectedCategory){
 
- if($("maxPrice").value!=="")
- q=q.lte("price",Number($("maxPrice").value));
+q=q.eq("category",selectedCategory);
 
- const sort=$("sort").value;
+}
 
- if(sort==="cheap")
- q=q.order("price",{ascending:true});
- else if(sort==="expensive")
- q=q.order("price",{ascending:false});
- else
- q=q.order("created_at",{ascending:false});
+const city=$("cityFilter").value;
 
- const {data,error}=await q
- .order("id")
- .range(offset,offset+23);
+if(city)q=q.eq("city",city);
 
- if(version!==listVersion)return;
- if(error)throw error;
+const search=$("search").value.trim();
 
- ads=ads.concat(data||[]);
- offset+=(data||[]).length;
+if(search)q=q.ilike("title","%"+search+"%");
 
- renderAds();
+if($("minPrice").value!=="")
+q=q.gte("price",Number($("minPrice").value));
 
- $("more").classList.toggle(
- "hidden",(data||[]).length<24
- );
+if($("maxPrice").value!=="")
+q=q.lte("price",Number($("maxPrice").value));
 
- }catch(e){
- notice(e.message);
- }
+const sort=$("sort").value;
+
+if(sort==="cheap")
+q=q.order("price",{ascending:true});
+
+else if(sort==="expensive")
+q=q.order("price",{ascending:false});
+
+else
+q=q.order("created_at",{ascending:false});
+
+const {data,error}=await q
+.order("id")
+.range(offset,offset+23);
+
+if(version!==listVersion)return;
+
+if(error)throw error;
+
+ads=ads.concat(data||[]);
+offset+=(data||[]).length;
+
+renderAds();
+
+$("more").classList.toggle(
+"hidden",(data||[]).length<24
+);
+
+}catch(e){
+
+notice(e.message);
+
+}finally{
+
+$("more").disabled=false;
+
+}
+
 }
 
 function renderAds(){
 
- $("listTitle").textContent=favoriteMode?
- "Эълонҳои дӯстдошта":
- selectedCategory||"Эълонҳои нав";
+$("listTitle").textContent=favoriteMode?
+"Эълонҳои дӯстдошта":
+selectedCategory||"Эълонҳои нав";
 
- $("products").innerHTML=ads.map(a=>`
+$("products").innerHTML=ads.map(a=>`
 
- <article class="product"
- onclick="openDetail('${a.id}')">
+<article class="product" onclick="openDetail('${a.id}')">
 
- <button class="heart"
- onclick="event.stopPropagation();toggleFavorite('${a.id}')">
- ${favorites.has(a.id)?"♥":"♡"}
- </button>
+<button class="heart"
+onclick="event.stopPropagation();toggleFavorite('${a.id}')">
+${favorites.has(a.id)?"♥":"♡"}
+</button>
 
- ${a.images?.length?
- `<img loading="lazy" src="${esc(photo(a.images[0]))}">`:
- `<div style="height:170px;background:#eee;display:grid;place-items:center;font-size:45px">📦</div>`}
+${a.images?.length?
+`<img loading="lazy" src="${esc(photo(a.images[0]))}" alt="${esc(a.title)}">`:
+'<div class="placeholder">📦</div>'}
 
- <div class="info">
- <div class="price">${esc(money(a.price))}</div>
- <h3>${esc(a.title)}</h3>
- <small>📍 ${esc(a.city)}</small>
- <p><small>${esc(a.condition)}</small></p>
- </div>
+<div class="info">
 
- </article>
+<div class="price">${esc(money(a.price))}</div>
 
- `).join("")||'<div class="empty">Эълон ёфт нашуд.</div>';
-}
+<h3>${esc(a.title)}</h3>
 
-function loadMore(){
- loadAds(true);
+<small>📍 ${esc(a.city)}</small>
+
+<p><small>${esc(a.condition)}</small></p>
+
+</div>
+</article>
+
+`).join("")||
+'<div class="empty">Эълон ёфт нашуд.</div>';
+
 }
 
 function goHome(){
- favoriteMode=false;
- show("home");
- loadAds();
+
+if(recoveryMode)return;
+
+favoriteMode=false;
+selectedCategory="";
+$("search").value="";
+$("cityFilter").value="";
+$("minPrice").value="";
+$("maxPrice").value="";
+
+document.querySelectorAll(".category")
+.forEach((el,i)=>el.classList.toggle("active",i===0));
+
+show("home");
+loadAds();
+
 }
 
 async function toggleFavorite(id){
 
- if(!user){
- openAccount();
- return;
- }
+if(!user){
+openAccount();
+return;
+}
 
- let result;
+let result;
 
- if(favorites.has(id)){
- result=await db.from("favorites").delete()
- .eq("user_id",user.id).eq("ad_id",id);
+if(favorites.has(id)){
 
- if(!result.error)favorites.delete(id);
+result=await db.from("favorites")
+.delete()
+.eq("user_id",user.id)
+.eq("ad_id",id);
 
- }else{
+if(!result.error)favorites.delete(id);
 
- result=await db.from("favorites")
- .insert({user_id:user.id,ad_id:id});
+}else{
 
- if(!result.error)favorites.add(id);
- }
+result=await db.from("favorites")
+.insert({user_id:user.id,ad_id:id});
 
- if(result.error){
- notice(result.error.message);
- return;
- }
+if(!result.error)favorites.add(id);
 
- if(favoriteMode)loadAds();
- else renderAds();
+}
+
+if(result.error){
+notice(result.error.message);
+return;
+}
+
+if(favoriteMode)loadAds();
+else renderAds();
+
 }
 
 function showFavorites(){
- if(!user){openAccount();return}
- favoriteMode=true;
- show("home");
- loadAds();
+
+if(recoveryMode)return;
+
+if(!user){
+openAccount();
+return;
+}
+
+favoriteMode=true;
+$("search").value="";
+$("cityFilter").value="";
+$("minPrice").value="";
+$("maxPrice").value="";
+
+show("home");
+loadAds();
+
 }
 
 async function openDetail(id){
 
- const {data:a,error}=await db.from("ads")
- .select("*").eq("id",id).single();
+const {data:a,error}=await db.from("ads")
+.select("*")
+.eq("id",id)
+.single();
 
- if(error){notice(error.message);return}
+if(error){
+notice("Эълон дастрас нест.");
+return;
+}
 
- const phone=String(a.phone).replace(/[^\d+]/g,"");
+const phone=String(a.phone).replace(/[^\d+]/g,"");
 
- $("detailContent").innerHTML=`
+$("detailContent").innerHTML=`
 
- <h2>${esc(a.title)}</h2>
+<h2>${esc(a.title)}</h2>
 
- ${a.images?.length?
- `<img id="mainPhoto" class="detailPhoto"
- src="${esc(photo(a.images[0]))}">
- <div class="thumbs">
- ${a.images.map(p=>`
- <img src="${esc(photo(p))}"
- onclick="$('mainPhoto').src=this.src">
- `).join("")}
- </div>`:""}
+${a.images?.length?`
 
- <div class="price">${esc(money(a.price))}</div>
+<img id="mainPhoto" class="detailPhoto"
+src="${esc(photo(a.images[0]))}">
 
- <p>📍 ${esc(a.city)}</p>
- <p>Категория: ${esc(a.category)}</p>
- <p>Ҳолат: ${esc(a.condition)}</p>
+<div class="thumbs">
 
- <h3>Тавсиф</h3>
- <p style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(a.description)}</p>
+${a.images.map(p=>`
+<img src="${esc(photo(p))}"
+onclick="$('mainPhoto').src=this.src">
+`).join("")}
 
- <div class="row">
+</div>
 
- <a style="text-decoration:none;text-align:center;background:#16a34a;color:white;padding:14px;border-radius:12px"
- href="tel:${esc(phone)}">📞 Занг задан</a>
+`:""}
 
- <button onclick="startChat('${a.id}','${a.user_id}')">
- 💬 Паём
- </button>
+<div class="price">${esc(money(a.price))}</div>
 
- </div>
+<p>📍 ${esc(a.city)}</p>
+<p>Категория: ${esc(a.category)}</p>
+<p>Ҳолат: ${esc(a.condition)}</p>
 
- <p>${esc(a.phone)}</p>
+<h3>Тавсифи эълон</h3>
 
- <button class="gray full"
- onclick="shareAd('${a.id}')">
- 🔗 Паҳн кардани эълон
- </button>
+<p style="white-space:pre-wrap;overflow-wrap:anywhere">
+${esc(a.description)}
+</p>
 
- `;
+<div class="row">
 
- if(!$("detail").open)$("detail").showModal();
+<a href="tel:${esc(phone)}"
+style="background:#16a34a;color:white;padding:14px;border-radius:12px;text-decoration:none;text-align:center">
+📞 Занг задан
+</a>
+
+<button onclick="startChat('${a.id}','${a.user_id}')">
+💬 Паём
+</button>
+
+</div>
+
+<p>${esc(a.phone)}</p>
+
+<button class="gray full" onclick="shareAd('${a.id}')">
+🔗 Паҳн кардани эълон
+</button>
+
+`;
+
+if(!$("detail").open)$("detail").showModal();
+
 }
 
 async function shareAd(id){
 
- const url=new URL(location.pathname,location.origin);
- url.searchParams.set("ad",id);
+const url=new URL(REDIRECT);
+url.searchParams.set("ad",id);
 
- if(navigator.share){
- try{await navigator.share({url:url.href})}
- catch(e){}
- }else{
- prompt("Истиноди эълон:",url.href);
- }
+try{
+
+if(navigator.share)
+await navigator.share({url:url.href});
+
+else if(navigator.clipboard){
+await navigator.clipboard.writeText(url.href);
+alert("Истинод нусхабардорӣ шуд.");
+}else{
+prompt("Истинод:",url.href);
 }
+
+}catch(e){}
+
+}
+
+// ADD PRODUCT
 
 function openPost(){
 
- if(!user){openAccount();return}
+if(recoveryMode||publishing)return;
 
- editId=null;
- selectedFiles=[];
- oldImages=[];
+if(!user){
+openAccount();
+return;
+}
 
- $("postForm").reset();
- $("postTitle").textContent="Эълони нав";
+editId=null;
+selectedFiles=[];
+oldImages=[];
 
- renderPreview();
- show("post");
+$("postForm").reset();
+$("postTitle").textContent="Эълони нав";
+
+renderPreview();
+show("post");
+
 }
 
 function addFiles(input){
 
- for(const file of input.files){
+if(publishing)return;
 
- if(selectedFiles.length+oldImages.length>=10){
- notice("Танҳо 10 акс иҷозат аст.");
- break;
- }
+for(const file of input.files){
 
- if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
- notice("Формати акс нодуруст аст.");
- continue;
- }
+if(selectedFiles.length+oldImages.length>=10){
+notice("Танҳо 10 акс иҷозат аст.");
+break;
+}
 
- if(file.size>5242880){
- notice("Ҳар акс бояд аз 5 MB зиёд набошад.");
- continue;
- }
+if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+notice("Формати акс нодуруст аст.");
+continue;
+}
 
- selectedFiles.push(file);
- }
+if(file.size>5242880){
+notice("Ҳар акс бояд то 5 MB бошад.");
+continue;
+}
 
- input.value="";
- renderPreview();
+selectedFiles.push(file);
+
+}
+
+input.value="";
+renderPreview();
+
 }
 
 $("photos").onchange=e=>addFiles(e.target);
 $("camera").onchange=e=>addFiles(e.target);
 
-let previewUrls=[];
+function removePhoto(type,index){
+
+if(publishing)return;
+
+if(type==="old")oldImages.splice(index,1);
+else selectedFiles.splice(index,1);
+
+renderPreview();
+
+}
 
 function renderPreview(){
 
- previewUrls.forEach(u=>URL.revokeObjectURL(u));
- previewUrls=[];
+previewUrls.forEach(u=>URL.revokeObjectURL(u));
+previewUrls=[];
 
- $("preview").innerHTML=
- oldImages.map((p,i)=>`
- <div>
- <img src="${esc(photo(p))}">
- <button type="button" class="red full"
- onclick="oldImages.splice(${i},1);renderPreview()">✕</button>
- </div>
- `).join("")+
+$("preview").innerHTML=
 
- selectedFiles.map((f,i)=>{
+oldImages.map((p,i)=>`
 
- const url=URL.createObjectURL(f);
- previewUrls.push(url);
+<div>
+<img src="${esc(photo(p))}">
+<button type="button" class="red full"
+onclick="removePhoto('old',${i})">✕</button>
+</div>
 
- return `<div>
- <img src="${url}">
- <button type="button" class="red full"
- onclick="selectedFiles.splice(${i},1);renderPreview()">✕</button>
- </div>`;
- }).join("");
+`).join("")+
+
+selectedFiles.map((f,i)=>{
+
+const url=URL.createObjectURL(f);
+previewUrls.push(url);
+
+return `
+
+<div>
+<img src="${url}">
+<button type="button" class="red full"
+onclick="removePhoto('new',${i})">✕</button>
+</div>
+
+`;
+
+}).join("");
+
 }
 
 $("postForm").onsubmit=async e=>{
 
- e.preventDefault();
+e.preventDefault();
 
- if(!user)return;
+if(!user||publishing)return;
 
- const owner=user.id;
- const uploaded=[];
+publishing=true;
 
- $("publishButton").disabled=true;
+const owner=user.id;
+const currentEdit=editId;
+const files=[...selectedFiles];
+const existing=[...oldImages];
+const uploaded=[];
 
- try{
+let saved=false;
 
- if(!selectedFiles.length&&!oldImages.length)
- throw new Error("Камаш як акс илова кунед.");
+$("publishButton").disabled=true;
 
- const phone=$("phone").value.replace(/[\s()-]/g,"");
+try{
 
- if(!/^\+?\d{9,15}$/.test(phone))
- throw new Error("Рақами телефонро дуруст нависед.");
+if(!files.length&&!existing.length)
+throw new Error("Камаш як акс илова кунед.");
 
- for(const file of selectedFiles){
+const phone=$("phone").value.replace(/[\s()-]/g,"");
 
- const ext={
- "image/jpeg":"jpg",
- "image/png":"png",
- "image/webp":"webp"
- }[file.type];
+if(!/^\+?\d{9,15}$/.test(phone))
+throw new Error("Телефонро дуруст нависед.");
 
- const path=owner+"/"+crypto.randomUUID()+"."+ext;
+const values={
 
- const {error}=await db.storage.from("ad-images")
- .upload(path,file,{contentType:file.type});
+title:$("title").value.trim(),
+category:$("category").value,
+city:$("city").value,
+price:Number($("price").value),
+condition:$("condition").value,
+phone,
+description:$("description").value.trim()
 
- if(error)throw error;
-
- uploaded.push(path);
- }
-
- const values={
- title:$("title").value.trim(),
- category:$("category").value,
- city:$("city").value,
- price:Number($("price").value),
- condition:$("condition").value,
- phone:phone,
- description:$("description").value.trim(),
- images:[...oldImages,...uploaded]
- };
-
- let result;
-
- if(editId){
-
- result=await db.from("ads")
- .update(values)
- .eq("id",editId)
- .eq("user_id",owner)
- .select("id").single();
-
- }else{
-
- result=await db.from("ads").insert({
- ...values,user_id:owner
- });
-
- }
-
- if(result.error)throw result.error;
-
- selectedFiles=[];
- oldImages=[];
-
- goHome();
- notice("Эълон бомуваффақият сабт шуд!");
-
- }catch(e){
-
- if(uploaded.length)
- await db.storage.from("ad-images").remove(uploaded);
-
- notice(e.message);
-
- }finally{
- $("publishButton").disabled=false;
- }
 };
+
+if(!values.title||!values.description)
+throw new Error("Ном ва тавсифро ворид кунед.");
+
+for(const file of files){
+
+const ext={
+"image/jpeg":"jpg",
+"image/png":"png",
+"image/webp":"webp"
+}[file.type];
+
+const path=owner+"/"+crypto.randomUUID()+"."+ext;
+
+const {error}=await db.storage.from("ad-images")
+.upload(path,file,{contentType:file.type});
+
+if(error)throw error;
+
+uploaded.push(path);
+
+}
+
+values.images=[...existing,...uploaded];
+
+let result;
+
+if(currentEdit){
+
+result=await db.from("ads")
+.update(values)
+.eq("id",currentEdit)
+.eq("user_id",owner)
+.select("id")
+.single();
+
+}else{
+
+result=await db.from("ads")
+.insert({...values,user_id:owner})
+.select("id")
+.single();
+
+}
+
+if(result.error)throw result.error;
+
+saved=true;
+selectedFiles=[];
+oldImages=[];
+renderPreview();
+
+goHome();
+notice("Эълон бомуваффақият ҷойгир шуд!");
+
+}catch(e){
+
+if(!saved&&uploaded.length){
+
+await db.storage.from("ad-images")
+.remove(uploaded);
+
+}
+
+notice(e.message);
+
+}finally{
+
+publishing=false;
+$("publishButton").disabled=false;
+
+}
+
+};
+
+// AUTHENTICATION
 
 function authForm(register=false){
 
- $("accountContent").innerHTML=`
+$("accountContent").innerHTML=`
 
- <div class="card">
+<div class="card formCard">
 
- <h2>${register?"Сабти ном":"Ворид шудан"}</h2>
+<h2>${register?"Сабти ном":"Ворид шудан"}</h2>
 
- <form id="authForm">
+<form id="authForm">
 
- <label>Email</label>
- <input id="email" type="email" required>
+<label>Email</label>
+<input id="email" type="email" autocomplete="email" required>
 
- <label>Парол</label>
- <input id="password" type="password"
- ${register?'minlength="8"':''} required>
+<label>Парол</label>
+<input id="password" type="password"
+autocomplete="${register?"new-password":"current-password"}"
+${register?'minlength="8"':''} required>
 
- <button class="full" type="submit">
- ${register?"Аккаунт сохтан":"Ворид шудан"}
- </button>
+<button class="full" type="submit">
+${register?"Аккаунт сохтан":"Ворид шудан"}
+</button>
 
- </form>
+</form>
 
- <br>
+<br>
 
- <button class="gray full"
- onclick="authForm(${!register})">
- ${register?"Аллакай аккаунт дорам":"Сабти номи нав"}
- </button>
+<button class="gray full" onclick="authForm(${!register})">
+${register?"Аллакай аккаунт дорам":"Аккаунти нав"}
+</button>
 
- <br><br>
+<br><br>
 
- <button class="gray full" onclick="forgotPassword()">
- Паролро фаромӯш кардед?
- </button>
+<button class="gray full" onclick="forgotPassword()">
+Паролро фаромӯш кардед?
+</button>
 
- </div>`;
+</div>
 
- $("authForm").onsubmit=async e=>{
+`;
 
- e.preventDefault();
+$("authForm").onsubmit=async e=>{
 
- const btn=e.target.querySelector("button");
- btn.disabled=true;
+e.preventDefault();
 
- try{
+const btn=e.target.querySelector("button");
+btn.disabled=true;
 
- const email=$("email").value.trim();
- const password=$("password").value;
+try{
 
- const result=register?
- await db.auth.signUp({
- email,password,
- options:{
- emailRedirectTo:location.origin+location.pathname
- }
- }):
- await db.auth.signInWithPassword({email,password});
+const email=$("email").value.trim();
+const password=$("password").value;
 
- if(result.error)throw result.error;
+const result=register?
 
- if(result.data.session){
- user=result.data.session.user;
- await refreshFavorites();
- openAccount();
- }else{
- notice("Email-и худро тасдиқ кунед.");
- }
+await db.auth.signUp({
+email,
+password,
+options:{emailRedirectTo:REDIRECT}
+}):
 
- }catch(e){
- notice(e.message);
- }finally{
- btn.disabled=false;
- }
- };
+await db.auth.signInWithPassword({
+email,password
+});
+
+if(result.error)throw result.error;
+
+if(result.data.session){
+
+user=result.data.session.user;
+
+await refreshFavorites();
+openAccount();
+
+}else{
+
+notice("Email-и худро кушоед ва аккаунтро тасдиқ кунед.");
+
+}
+
+}catch(e){
+
+notice(e.message);
+
+}finally{
+
+btn.disabled=false;
+
+}
+
+};
+
 }
 
 async function forgotPassword(){
 
- const email=$("email")?.value.trim();
+const email=$("email")?.value.trim();
 
- if(!email){
- notice("Аввал Email-ро ворид кунед.");
- return;
- }
-
- const {error}=await db.auth.resetPasswordForEmail(
- email,{
- redirectTo:location.origin+location.pathname
- }
- );
-
- notice(error?error.message:
- "Агар аккаунт вуҷуд дошта бошад, Email фиристода мешавад.");
+if(!email){
+notice("Аввал Email-ро ворид кунед.");
+return;
 }
 
-function recoveryForm(){
+const {error}=await db.auth.resetPasswordForEmail(
+email,{redirectTo:REDIRECT}
+);
 
- recoveryMode=true;
- show("account");
+notice(error?error.message:
+"Агар аккаунт вуҷуд дошта бошад, истинод ба Email фиристода мешавад.");
 
- $("accountContent").innerHTML=`
-
- <div class="card">
- <h2>Пароли нав</h2>
-
- <form id="resetForm">
-
- <input id="newPassword" type="password"
- minlength="8" placeholder="Пароли нав" required>
-
- <input id="confirmPassword" type="password"
- minlength="8" placeholder="Такрори парол" required>
-
- <button class="full">Сабти пароли нав</button>
-
- </form>
- </div>`;
-
- $("resetForm").onsubmit=async e=>{
-
- e.preventDefault();
-
- const password=$("newPassword").value;
-
- if(password!==$("confirmPassword").value){
- notice("Паролҳо якхела нестанд.");
- return;
- }
-
- const {error}=await db.auth.updateUser({password});
-
- if(error){notice(error.message);return}
-
- const result=await db.auth.signOut();
-
- recoveryMode=false;
- user=null;
-
- authForm();
-
- notice(result.error?
- "Парол иваз шуд, аммо баромадан аз аккаунтро санҷед.":
- "Парол иваз шуд. Аз нав ворид шавед.");
- };
 }
+
+function recoveryForm(session){
+
+if(!session?.user)return;
+
+recoveryMode=true;
+recoveryUser=session.user.id;
+
+show("account");
+
+$("accountContent").innerHTML=`
+
+<div class="card formCard">
+
+<h2>🔐 Пароли нав</h2>
+
+<form id="resetForm">
+
+<label>Пароли нав</label>
+<input id="newPassword" type="password"
+minlength="8" autocomplete="new-password" required>
+
+<label>Такрори пароли нав</label>
+<input id="confirmPassword" type="password"
+minlength="8" autocomplete="new-password" required>
+
+<button class="full" type="submit">
+Сабти пароли нав
+</button>
+
+</form>
+</div>
+
+`;
+
+$("resetForm").onsubmit=async e=>{
+
+e.preventDefault();
+
+const btn=e.target.querySelector("button");
+
+if(btn.disabled)return;
+
+const password=$("newPassword").value;
+
+if(password!==$("confirmPassword").value){
+
+notice("Паролҳо якхела нестанд.");
+return;
+
+}
+
+btn.disabled=true;
+
+try{
+
+const check=await db.auth.getUser();
+
+if(check.error||check.data.user?.id!==recoveryUser)
+throw new Error("Истиноди нави барқароркунӣ лозим аст.");
+
+const {error}=await db.auth.updateUser({password});
+
+if(error)throw error;
+
+recoveryMode=false;
+recoveryUser=null;
+
+const result=await db.auth.signOut();
+
+user=null;
+authForm();
+
+notice(result.error?
+"Парол иваз шуд. Аз аккаунт бароед.":
+"Парол иваз шуд. Бо пароли нав ворид шавед.");
+
+}catch(e){
+
+notice(e.message);
+
+}finally{
+
+btn.disabled=false;
+
+}
+
+};
+
+}
+
+// ACCOUNT
 
 async function openAccount(){
 
- if(recoveryMode){recoveryForm();return}
+if(recoveryMode)return;
 
- show("account");
+show("account");
 
- if(!user){authForm();return}
+if(!user){
+authForm();
+return;
+}
 
- $("accountContent").innerHTML=`
+$("accountContent").innerHTML=`
 
- <div class="card">
- <h2>👤 Аккаунти ман</h2>
- <p>${esc(user.email)}</p>
- <div class="row">
- <button onclick="openPost()">＋ Эълон</button>
- <button class="red" onclick="logout()">Баромадан</button>
- </div>
- <br>
- <button id="adminButton" class="hidden full"
- onclick="openAdmin()">🛡️ Admin</button>
- </div>
+<div class="card formCard">
 
- <div class="card">
- <h2>Эълонҳои ман</h2>
- <div id="myAds">Боргирӣ...</div>
- </div>`;
+<h2>👤 Аккаунти ман</h2>
 
- const {data,error}=await db.from("ads")
- .select("*").eq("user_id",user.id)
- .order("created_at",{ascending:false})
- .limit(100);
+<p>${esc(user.email)}</p>
 
- if(!$("myAds"))return;
+<div class="row">
+<button onclick="openPost()">＋ Эълон</button>
+<button class="red" onclick="logout()">Баромадан</button>
+</div>
 
- if(error){notice(error.message);return}
+<br>
 
- $("myAds").innerHTML=(data||[]).map(a=>`
+<button class="gray full" onclick="changePassword()">
+🔐 Иваз кардани парол
+</button>
 
- <div class="card" style="background:#f5f5f5">
+<br><br>
 
- <strong>${esc(a.title)}</strong>
- <p>${esc(money(a.price))}</p>
- <small>${a.blocked?"Аз тарафи Admin баста":
- a.active?"Фаъол":"Пинҳон"}</small>
+<button id="adminButton" class="full hidden"
+onclick="openAdmin()">🛡️ Admin</button>
 
- <br><br>
+</div>
 
- <div class="row">
- <button onclick="editAd('${a.id}')">Таҳрир</button>
- <button class="gray"
- onclick="toggleAd('${a.id}',${!a.active})">
- ${a.active?"Пинҳон":"Фаъол"}
- </button>
- <button class="red"
- onclick="deleteAd('${a.id}')">Нест кардан</button>
- </div>
+<div class="card formCard">
 
- </div>
+<h2>Эълонҳои ман</h2>
 
- `).join("")||"Ҳоло эълон надоред.";
+<div id="myAds">Боргирӣ...</div>
 
- const admin=await db.rpc("is_admin");
+</div>
 
- if($("adminButton")&&admin.data===true)
- $("adminButton").classList.remove("hidden");
+`;
+
+const {data,error}=await db.from("ads")
+.select("*")
+.eq("user_id",user.id)
+.order("created_at",{ascending:false})
+.limit(100);
+
+if(!$("myAds"))return;
+
+if(error){
+notice(error.message);
+return;
+}
+
+$("myAds").innerHTML=(data||[]).map(a=>`
+
+<div class="card" style="background:#f5f6f8">
+
+${a.images?.length?
+`<img src="${esc(photo(a.images[0]))}"
+style="width:100%;height:180px;object-fit:cover;border-radius:12px">`:""}
+
+<h3>${esc(a.title)}</h3>
+
+<div class="price">${esc(money(a.price))}</div>
+
+<p>${a.blocked?"Аз тарафи Admin баста":
+a.active?"🟢 Фаъол":"⚪ Пинҳон"}</p>
+
+<div class="row">
+
+<button onclick="editAd('${a.id}')">
+Таҳрир
+</button>
+
+<button class="gray"
+onclick="toggleAd('${a.id}',${!a.active})">
+${a.active?"Пинҳон":"Фаъол"}
+</button>
+
+<button class="red" onclick="deleteAd('${a.id}')">
+Нест кардан
+</button>
+
+</div>
+</div>
+
+`).join("")||"Ҳоло эълон надоред.";
+
+const admin=await db.rpc("is_admin");
+
+if($("adminButton")&&admin.data===true)
+$("adminButton").classList.remove("hidden");
+
+}
+
+async function changePassword(){
+
+if(!user?.email)return;
+
+const {error}=await db.auth.resetPasswordForEmail(
+user.email,{redirectTo:REDIRECT}
+);
+
+notice(error?error.message:
+"Истиноди иваз кардани парол ба Email фиристода шуд.");
+
 }
 
 async function editAd(id){
 
- const {data:a,error}=await db.from("ads")
- .select("*").eq("id",id)
- .eq("user_id",user.id).single();
+if(!user||publishing)return;
 
- if(error){notice(error.message);return}
+const {data:a,error}=await db.from("ads")
+.select("*")
+.eq("id",id)
+.eq("user_id",user.id)
+.single();
 
- openPost();
+if(error){
+notice(error.message);
+return;
+}
 
- editId=id;
- oldImages=[...(a.images||[])];
+openPost();
 
- $("postTitle").textContent="Таҳрири эълон";
+editId=id;
+oldImages=[...(a.images||[])];
 
- for(const key of [
- "title","category","city","price",
- "condition","phone","description"
- ]){
- $(key).value=a[key];
- }
+$("postTitle").textContent="Таҳрири эълон";
 
- renderPreview();
+for(const key of [
+"title","category","city","price",
+"condition","phone","description"
+]){
+
+$(key).value=a[key];
+
+}
+
+renderPreview();
+
 }
 
 async function toggleAd(id,active){
 
- const {error}=await db.from("ads")
- .update({active})
- .eq("id",id).eq("user_id",user.id);
+if(!user)return;
 
- if(error)notice(error.message);
- else openAccount();
+const {error}=await db.from("ads")
+.update({active})
+.eq("id",id)
+.eq("user_id",user.id);
+
+if(error)notice(error.message);
+else openAccount();
+
 }
 
 async function deleteAd(id){
 
- if(!confirm("Эълон нест карда шавад?"))return;
+if(!user)return;
 
- const {error}=await db.from("ads").delete()
- .eq("id",id).eq("user_id",user.id);
+if(!confirm("Эълон ва паёмҳои он нест карда шаванд?"))return;
 
- if(error)notice(error.message);
- else openAccount();
+const {error}=await db.from("ads")
+.delete()
+.eq("id",id)
+.eq("user_id",user.id);
+
+if(error)notice(error.message);
+else openAccount();
+
 }
 
 async function logout(){
 
- const {error}=await db.auth.signOut();
+const {error}=await db.auth.signOut();
 
- if(error){notice(error.message);return}
-
- user=null;
- favorites.clear();
- openAccount();
+if(error){
+notice(error.message);
+return;
 }
+
+user=null;
+favorites.clear();
+openAccount();
+
+}
+
+// CHAT
 
 async function startChat(adId,otherId){
 
- $("detail").close();
+$("detail").close();
 
- if(!user){openAccount();return}
+if(!user){
+openAccount();
+return;
+}
 
- if(user.id===otherId){
- notice("Ин эълони худи шумост.");
- return;
- }
+if(user.id===otherId){
+notice("Ин эълони худи шумост.");
+return;
+}
 
- await openChats();
+await openChats();
 
- openConversation(adId,otherId);
+openConversation(adId,otherId);
+
 }
 
 async function openChats(){
 
- if(!user){openAccount();return}
+if(recoveryMode)return;
 
- show("chat");
+if(!user){
+openAccount();
+return;
+}
 
- chatAd=null;
- chatUser=null;
+show("chat");
 
- $("chatContent").innerHTML="";
+chatAd=null;
+chatUser=null;
 
- const {data,error}=await db.from("messages")
- .select("*")
- .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
- .order("created_at",{ascending:false})
- .limit(300);
+$("chatContent").innerHTML="";
 
- if(error){notice(error.message);return}
+const {data,error}=await db.from("messages")
+.select("*")
+.or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+.order("created_at",{ascending:false})
+.limit(300);
 
- const seen=new Set();
+if(error){
+notice(error.message);
+return;
+}
 
- $("conversations").innerHTML=(data||[]).filter(m=>{
+const seen=new Set();
 
- const other=m.sender_id===user.id?
- m.receiver_id:m.sender_id;
+$("conversations").innerHTML=(data||[]).filter(m=>{
 
- const key=m.ad_id+other;
+const other=m.sender_id===user.id?
+m.receiver_id:m.sender_id;
 
- if(seen.has(key))return false;
- seen.add(key);
- return true;
+const key=m.ad_id+other;
 
- }).map(m=>{
+if(seen.has(key))return false;
 
- const other=m.sender_id===user.id?
- m.receiver_id:m.sender_id;
+seen.add(key);
+return true;
 
- return `<button class="gray full"
- style="margin-bottom:8px"
- onclick="openConversation('${m.ad_id}','${other}')">
- 💬 ${esc(m.message.slice(0,65))}
- </button>`;
+}).map(m=>{
 
- }).join("")||"Ҳоло паём надоред.";
+const other=m.sender_id===user.id?
+m.receiver_id:m.sender_id;
+
+return `
+
+<button class="gray full"
+style="margin-bottom:8px"
+onclick="openConversation('${m.ad_id}','${other}')">
+
+💬 ${esc(m.message.slice(0,65))}
+
+</button>
+
+`;
+
+}).join("")||"Ҳоло паём надоред.";
+
 }
 
 function openConversation(adId,otherId){
 
- clearInterval(chatTimer);
+if(!user)return;
 
- chatAd=adId;
- chatUser=otherId;
+clearInterval(chatTimer);
 
- $("chatContent").innerHTML=`
+chatAd=adId;
+chatUser=otherId;
 
- <hr>
- <div id="messageList"></div>
+$("chatContent").innerHTML=`
 
- <form id="messageForm">
- <textarea id="messageInput" maxlength="2000"
- placeholder="Паём нависед..." required></textarea>
- <button class="full">Фиристодан</button>
- </form>`;
+<hr>
 
- $("messageForm").onsubmit=async e=>{
+<div id="messageList"></div>
 
- e.preventDefault();
+<form id="messageForm">
 
- const btn=e.target.querySelector("button");
- btn.disabled=true;
+<textarea id="messageInput"
+maxlength="2000"
+placeholder="Паём нависед..."
+required></textarea>
 
- try{
+<button class="full" type="submit">
+Фиристодан
+</button>
 
- const message=$("messageInput").value.trim();
- if(!message)return;
+</form>
 
- const {error}=await db.from("messages").insert({
- ad_id:chatAd,
- sender_id:user.id,
- receiver_id:chatUser,
- message
- });
+`;
 
- if(error)throw error;
+$("messageForm").onsubmit=async e=>{
 
- $("messageInput").value="";
- await loadMessages();
+e.preventDefault();
 
- }catch(e){
- notice(e.message);
- }finally{
- btn.disabled=false;
- }
- };
+const btn=e.target.querySelector("button");
+btn.disabled=true;
 
- loadMessages();
- chatTimer=setInterval(loadMessages,5000);
+try{
+
+const message=$("messageInput").value.trim();
+
+if(!message)return;
+
+const {error}=await db.from("messages").insert({
+
+ad_id:chatAd,
+sender_id:user.id,
+receiver_id:chatUser,
+message
+
+});
+
+if(error)throw error;
+
+if($("messageInput"))$("messageInput").value="";
+
+await loadMessages();
+
+}catch(e){
+
+notice(e.message);
+
+}finally{
+
+btn.disabled=false;
+
+}
+
+};
+
+loadMessages();
+chatTimer=setInterval(loadMessages,5000);
+
 }
 
 async function loadMessages(){
 
- if(!user||!chatAd||!$("messageList"))return;
+if(!user||!chatAd||!$("messageList"))return;
 
- const ad=chatAd;
- const other=chatUser;
+const ad=chatAd;
+const other=chatUser;
+const uid=user.id;
 
- const {data,error}=await db.from("messages")
- .select("*")
- .eq("ad_id",ad)
- .or(`and(sender_id.eq.${user.id},receiver_id.eq.${other}),and(sender_id.eq.${other},receiver_id.eq.${user.id})`)
- .order("created_at",{ascending:false})
- .limit(100);
+const {data,error}=await db.from("messages")
+.select("*")
+.eq("ad_id",ad)
+.or(`and(sender_id.eq.${uid},receiver_id.eq.${other}),and(sender_id.eq.${other},receiver_id.eq.${uid})`)
+.order("created_at",{ascending:false})
+.limit(100);
 
- if(chatAd!==ad||chatUser!==other||!$("messageList"))return;
+if(chatAd!==ad||chatUser!==other||
+user?.id!==uid||!$("messageList"))return;
 
- if(error){notice(error.message);return}
-
- $("messageList").innerHTML=(data||[]).reverse().map(m=>`
-
- <div class="chatMessage ${m.sender_id===user.id?"mine":""}">
- ${esc(m.message)}
- </div>
-
- `).join("");
+if(error){
+notice(error.message);
+return;
 }
+
+$("messageList").innerHTML=(data||[]).reverse().map(m=>`
+
+<div class="chatMessage ${m.sender_id===uid?"mine":""}">
+
+${esc(m.message)}
+
+<br>
+
+<small>${esc(new Date(m.created_at).toLocaleString("ru-RU"))}</small>
+
+</div>
+
+`).join("");
+
+}
+
+// ADMIN
 
 async function openAdmin(){
 
- const check=await db.rpc("is_admin");
+const check=await db.rpc("is_admin");
 
- if(check.data!==true){
- notice("Дастрасӣ манъ аст.");
- return;
- }
+if(check.data!==true){
 
- show("admin");
+notice("Дастрасӣ манъ аст.");
+return;
 
- const {data,error}=await db.from("ads")
- .select("*")
- .order("created_at",{ascending:false})
- .limit(200);
+}
 
- if(error){notice(error.message);return}
+show("admin");
 
- $("adminContent").innerHTML=(data||[]).map(a=>`
+const {data,error}=await db.from("ads")
+.select("*")
+.order("created_at",{ascending:false})
+.limit(200);
 
- <div class="card" style="background:#f5f5f5">
+if(error){
 
- <strong>${esc(a.title)}</strong>
- <p>${esc(money(a.price))}</p>
- <p>${esc(a.city)}</p>
+notice(error.message);
+return;
 
- <button class="${a.blocked?"":"red"}"
- onclick="blockAd('${a.id}',${!a.blocked})">
- ${a.blocked?"Кушодани эълон":"Бастани эълон"}
- </button>
+}
 
- </div>
+$("adminContent").innerHTML=`
 
- `).join("");
+<h3>Эълонҳои охирин: ${(data||[]).length}</h3>
+
+`+(data||[]).map(a=>`
+
+<div class="card" style="background:#f5f6f8">
+
+<h3>${esc(a.title)}</h3>
+
+<p>${esc(money(a.price))}</p>
+
+<p>📍 ${esc(a.city)}</p>
+
+<p>Телефон: ${esc(a.phone)}</p>
+
+<button class="${a.blocked?"green":"red"}"
+onclick="blockAd('${a.id}',${!a.blocked})">
+
+${a.blocked?"Кушодани эълон":"Бастани эълон"}
+
+</button>
+
+</div>
+
+`).join("");
+
 }
 
 async function blockAd(id,blocked){
 
- const {error}=await db.rpc("admin_block_ad",{
- p_id:id,p_blocked:blocked
- });
+const {error}=await db.rpc("admin_block_ad",{
+p_id:id,
+p_blocked:blocked
+});
 
- if(error)notice(error.message);
- else openAdmin();
+if(error)notice(error.message);
+else openAdmin();
+
 }
 
+// START
+
 $("search").addEventListener("keydown",e=>{
- if(e.key==="Enter")loadAds();
+
+if(e.key==="Enter")loadAds();
+
 });
+
+$("cityFilter").onchange=()=>loadAds();
+$("sort").onchange=()=>loadAds();
 
 async function start(){
 
- setup();
+setup();
 
- db.auth.onAuthStateChange((event,session)=>{
+db.auth.onAuthStateChange((event,session)=>{
 
- user=session?.user||null;
+user=session?.user||null;
 
- if(event==="PASSWORD_RECOVERY"){
- recoveryMode=true;
- recoveryForm();
- }
+if(event==="PASSWORD_RECOVERY"&&session){
 
- });
+recoveryForm(session);
 
- const {data,error}=await db.auth.getSession();
+}
 
- if(error)notice(error.message);
+if(event==="SIGNED_OUT"){
 
- user=data?.session?.user||null;
+clearInterval(chatTimer);
+favorites.clear();
 
- if(recoveryMode)return;
+}
 
- await refreshFavorites();
- await loadAds();
+});
 
- const ad=new URLSearchParams(location.search).get("ad");
+const {data,error}=await db.auth.getSession();
 
- if(ad&&/^[0-9a-f-]{36}$/i.test(ad)){
- openDetail(ad);
- }
+if(error)throw error;
+
+user=data?.session?.user||null;
+
+if(recoveryMode)return;
+
+if(window.recoveryLink){
+
+show("account");
+authForm();
+notice("Агар истинод кор накунад, истиноди нави барқароркунӣ гиред.");
+return;
+
+}
+
+await refreshFavorites();
+await loadAds();
+
+const ad=new URLSearchParams(location.search).get("ad");
+
+if(ad&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ad)){
+
+openDetail(ad);
+
+}
+
 }
 
 start().catch(e=>notice(e.message));
@@ -1208,4 +1877,3 @@ start().catch(e=>notice(e.message));
 
 </body>
 </html>
-# SAVDO-TJ
