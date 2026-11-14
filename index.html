@@ -3,18 +3,11 @@
 <html lang="tg">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ff6900">
 <title>SAVDO TJ — Бозори Тоҷикистон</title>
 
-<script>
-const recoveryRequested =
-new URLSearchParams(location.hash.slice(1))
-.get("type")==="recovery";
-</script>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://unpkg.com/lucide@0.468.0"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -31,9 +24,7 @@ font-family:Arial,sans-serif;
 background:var(--bg);
 color:var(--dark);
 }
-button,input,select,textarea{
-font:inherit;
-}
+button,input,select,textarea{font:inherit}
 button{
 border:0;
 background:var(--orange);
@@ -43,13 +34,13 @@ border-radius:12px;
 font-weight:700;
 cursor:pointer;
 }
-button:hover{filter:brightness(.96)}
+button:hover{filter:brightness(.95)}
 button:disabled{opacity:.5}
 .gray{background:#edf0f5;color:var(--dark)}
 .red{background:#dc2626}
 .green{background:#16a34a}
 .full{width:100%}
-.hidden{display:none!important}
+.hidden,[hidden]{display:none!important}
 header{
 background:white;
 position:sticky;
@@ -58,7 +49,7 @@ z-index:20;
 border-bottom:1px solid var(--line);
 }
 .top{
-max-width:1380px;
+max-width:1400px;
 margin:auto;
 display:flex;
 align-items:center;
@@ -66,16 +57,16 @@ gap:12px;
 padding:18px 24px;
 }
 .logo{
-font-size:32px;
+font-size:33px;
 font-weight:900;
-letter-spacing:-1.5px;
+letter-spacing:-2px;
 color:var(--orange);
 margin-right:auto;
 cursor:pointer;
 }
 .logo span{color:var(--dark)}
 main{
-max-width:1380px;
+max-width:1400px;
 margin:auto;
 padding:24px 24px 110px;
 }
@@ -155,15 +146,37 @@ border-color:var(--orange);
 background:#fff5ed;
 color:var(--orange);
 }
-.filters{
+.filters,.extraGrid{
 display:grid;
 grid-template-columns:repeat(4,minmax(0,1fr));
 gap:10px;
+}
+.filters{
 padding:12px;
 background:white;
 border-radius:15px;
 }
 .filters input,.filters select{margin:0}
+.extraFields{
+background:white;
+border:1px solid var(--line);
+border-radius:18px;
+padding:18px;
+margin:15px 0;
+}
+.extraFields h3{color:var(--orange)}
+.extraDetails{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:10px;
+}
+.extraDetail{
+background:#f5f6fa;
+padding:12px;
+border-radius:10px;
+overflow-wrap:anywhere;
+}
+.extraDetail strong{display:block;margin-top:5px}
 .products{
 display:grid;
 grid-template-columns:repeat(4,minmax(0,1fr));
@@ -228,15 +241,8 @@ border-radius:20px;
 padding:22px;
 margin-bottom:15px;
 }
-.formCard{
-max-width:700px;
-margin:0 auto 18px;
-}
-.row{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-}
+.formCard{max-width:720px;margin:0 auto 18px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
 .row>*{flex:1}
 .upload{
 display:block;
@@ -249,10 +255,7 @@ color:var(--orange);
 cursor:pointer;
 margin-bottom:12px;
 }
-.upload strong{
-display:block;
-margin:8px 0;
-}
+.upload strong{display:block;margin:8px 0}
 .upload input{display:none}
 .preview{
 display:grid;
@@ -260,9 +263,7 @@ grid-template-columns:repeat(4,minmax(0,1fr));
 gap:9px;
 margin:15px 0;
 }
-.previewItem{
-position:relative;
-}
+.previewItem{position:relative}
 .preview img{
 width:100%;
 height:110px;
@@ -303,15 +304,8 @@ max-width:760px;
 max-height:90vh;
 overflow:auto;
 }
-dialog::backdrop{
-background:#0009;
-backdrop-filter:blur(3px);
-}
-.close{
-float:right;
-background:#eee;
-color:var(--dark);
-}
+dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
+.close{float:right;background:#eee;color:var(--dark)}
 .detailPhoto{
 width:100%;
 height:400px;
@@ -319,12 +313,7 @@ object-fit:contain;
 background:#f5f6fa;
 border-radius:16px;
 }
-.thumbs{
-display:flex;
-gap:8px;
-overflow:auto;
-margin:10px 0;
-}
+.thumbs{display:flex;gap:8px;overflow:auto;margin:10px 0}
 .thumbs img{
 width:75px;
 height:75px;
@@ -341,14 +330,8 @@ margin:9px 0;
 white-space:pre-wrap;
 overflow-wrap:anywhere;
 }
-.mine{
-margin-left:auto;
-background:#ffe5cf;
-}
-#messageList{
-max-height:450px;
-overflow:auto;
-}
+.mine{margin-left:auto;background:#ffe5cf}
+#messageList{max-height:450px;overflow:auto}
 nav{
 position:fixed;
 bottom:0;
@@ -367,21 +350,65 @@ background:white;
 color:#687385;
 font-size:11px;
 padding:5px;
-display:flex;
-align-items:center;
-flex-direction:column;
-gap:5px;
 }
+nav span{display:block;font-size:24px;margin-bottom:4px}
 nav button.active{color:var(--orange)}
-nav svg{width:24px;height:24px}
-.postNav{
-color:var(--orange)!important;
+footer{text-align:center;color:var(--gray);padding:30px 10px}
+#bannerBox{
+overflow:hidden;
+border-radius:22px;
+margin-bottom:25px;
+background:white;
 }
-footer{
-text-align:center;
-color:var(--gray);
-padding:30px 10px;
+.banner{position:relative}
+.banner img{
+width:100%;
+height:310px;
+object-fit:cover;
+display:block;
 }
+.bannerText{
+position:absolute;
+bottom:0;
+left:0;
+right:0;
+padding:22px;
+color:white;
+background:linear-gradient(transparent,#000d);
+}
+.bannerText h2{margin:8px 0}
+.bannerText a{
+display:inline-block;
+background:var(--orange);
+color:white;
+padding:10px 16px;
+border-radius:10px;
+text-decoration:none;
+}
+.bannerLabel{
+position:absolute;
+top:12px;
+left:12px;
+background:#0009;
+color:white;
+padding:6px 12px;
+border-radius:8px;
+font-size:11px;
+}
+.bannerDots{
+display:flex;
+justify-content:center;
+gap:8px;
+padding:10px;
+}
+.bannerDot{
+width:10px;
+height:10px;
+border-radius:50%;
+padding:0;
+background:#ddd;
+}
+.bannerDot.active{background:var(--orange)}
 @media(min-width:1000px){
 nav{
 width:650px;
@@ -413,11 +440,15 @@ main{padding:14px 12px 100px}
 .info{padding:12px}
 .info h3{font-size:14px}
 .price{font-size:19px}
-.filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+.filters,.extraGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .filters input,.filters select{font-size:13px;padding:10px}
 .detailPhoto{height:270px}
 .card{padding:17px}
 .preview{grid-template-columns:repeat(3,minmax(0,1fr))}
+.banner img{height:220px}
+.bannerText{padding:15px}
+.bannerText h2{font-size:19px}
+.bannerText p{font-size:12px}
 h2{font-size:21px}
 }
 </style>
@@ -427,9 +458,7 @@ h2{font-size:21px}
 
 <header>
 <div class="top">
-<div class="logo" onclick="goHome()">
-SAVDO<span>TJ</span>
-</div>
+<div class="logo" onclick="goHome()">SAVDO<span>TJ</span></div>
 <button onclick="openPost()">＋ Эълон</button>
 <button class="gray" onclick="openAccount()">👤</button>
 </div>
@@ -444,17 +473,19 @@ SAVDO<span>TJ</span>
 <div class="hero">
 <h1>Бозори Тоҷикистон</h1>
 <p>Харед ва фурӯшед. Ҳамаи эълонҳо ройгон!</p>
-
 <div class="search">
 <input id="search" placeholder="Чиро ҷустуҷӯ мекунед?">
 <button onclick="loadAds()">🔍</button>
 </div>
 </div>
 
+<div id="bannerBox" hidden></div>
+
 <h2>Категорияҳо</h2>
 <div id="categories" class="categories"></div>
 
 <div class="filters">
+
 <select id="cityFilter"></select>
 
 <select id="sort">
@@ -465,33 +496,42 @@ SAVDO<span>TJ</span>
 
 <input id="minPrice" type="number" min="0" placeholder="Нарх аз">
 <input id="maxPrice" type="number" min="0" placeholder="Нарх то">
+
 </div>
 
+<div id="searchAttributes"></div>
+
 <br>
-<button class="gray" onclick="loadAds()">Ҷустуҷӯ бо филтр</button>
+
+<button class="gray" onclick="loadAds()">🔍 Ҷустуҷӯ</button>
 
 <h2 id="listTitle">Эълонҳои нав</h2>
+
 <div id="products" class="products"></div>
 
 <br>
+
 <button id="more" class="gray full hidden"
 onclick="loadAds(true)">Эълонҳои бештар</button>
 
 <footer>SAVDO TJ © 2026 — Тоҷикистон</footer>
+
 </section>
 
 <!-- ЭЪЛОНИ НАВ -->
 
 <section id="post" class="hidden">
+
 <div class="card formCard">
 
 <h2 id="postTitle">Эълони нав</h2>
+
 <p>Маҳсулоти худро ройгон ба фурӯш гузоред.</p>
 
 <form id="postForm">
 
 <label class="upload">
-<i data-lucide="image-plus"></i>
+<span style="font-size:35px">🖼️</span>
 <strong>Илова кардани аксҳо</strong>
 <small>То 10 акс аз галерея</small>
 <input id="photos" type="file"
@@ -499,7 +539,7 @@ accept="image/jpeg,image/png,image/webp" multiple>
 </label>
 
 <label class="upload">
-<i data-lucide="camera"></i>
+<span style="font-size:35px">📷</span>
 <strong>Бо камера акс гирифтан</strong>
 <input id="camera" type="file"
 accept="image/jpeg,image/png,image/webp"
@@ -507,21 +547,24 @@ capture="environment">
 </label>
 
 <div id="photoCount">0 / 10 акс</div>
+
 <div id="preview" class="preview"></div>
 
 <label>Номи маҳсулот</label>
 <input id="title" maxlength="150"
-placeholder="Мисол: iPhone 15 Pro Max" required>
+placeholder="Мисол: Toyota Camry 2022" required>
 
 <label>Категория</label>
 <select id="category" required></select>
+
+<div id="postAttributes"></div>
 
 <label>Шаҳр</label>
 <select id="city" required></select>
 
 <label>Нарх (сомонӣ)</label>
-<input id="price" type="number"
-min="0" step="0.01" required>
+<input id="price" type="number" min="0"
+step="0.01" required>
 
 <label>Ҳолати маҳсулот</label>
 <select id="condition">
@@ -535,8 +578,7 @@ placeholder="+992900000000" required>
 
 <label>Тавсиф</label>
 <textarea id="description" maxlength="5000"
-placeholder="Дар бораи маҳсулот нависед..."
-required></textarea>
+placeholder="Дар бораи маҳсулот нависед..." required></textarea>
 
 <button id="publishButton" type="submit" class="full">
 Ҷойгир кардани эълон — РОЙГОН
@@ -567,6 +609,14 @@ required></textarea>
 <section id="admin" class="hidden">
 <div class="card">
 <h2>🛡️ SAVDO TJ Admin</h2>
+
+<a href="./admin.html"
+style="display:block;background:#ff6900;color:white;text-align:center;padding:15px;border-radius:12px;text-decoration:none">
+📢 Идоракунии рекламаҳо
+</a>
+
+<br>
+
 <div id="adminContent"></div>
 </div>
 </section>
@@ -579,65 +629,64 @@ required></textarea>
 </dialog>
 
 <nav>
+
 <button id="navHome" class="active" onclick="goHome()">
-<i data-lucide="house"></i>Асосӣ
+<span>🏠</span>Асосӣ
 </button>
 
 <button id="navFav" onclick="showFavorites()">
-<i data-lucide="heart"></i>Дӯстдошта
+<span>♡</span>Дӯстдошта
 </button>
 
-<button id="navPost" class="postNav" onclick="openPost()">
-<i data-lucide="plus-circle"></i>Эълон
+<button id="navPost" onclick="openPost()">
+<span>➕</span>Эълон
 </button>
 
 <button id="navChat" onclick="openChats()">
-<i data-lucide="message-circle"></i>Чат
+<span>💬</span>Чат
 </button>
 
 <button id="navAccount" onclick="openAccount()">
-<i data-lucide="user-round"></i>Аккаунт
+<span>👤</span>Аккаунт
 </button>
+
 </nav>
 
 <script>
 
 // SUPABASE
 
-const SUPABASE_URL =
-"https://hxisbrjwhnjprmlztxqb.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_P5V4lNjdiqYoDm-2QDPZZg_yIufHvL6";
-
-const db = supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+const db=supabase.createClient(
+"https://hxisbrjwhnjprmlztxqb.supabase.co",
+"sb_publishable_P5V4lNjdiqYoDm-2QDPZZg_yIufHvL6"
 );
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-const REDIRECT = location.origin + location.pathname;
+const REDIRECT="https://vayo665.github.io/SAVDO-TJ/";
 
-let user = null;
-let ads = [];
-let favorites = new Set();
-let selectedCategory = "";
-let selectedFiles = [];
-let oldImages = [];
-let previewUrls = [];
-let editId = null;
-let favoriteMode = false;
-let offset = 0;
-let listVersion = 0;
-let publishing = false;
-let recoveryMode = false;
-let recoveryUser = null;
-let chatAd = null;
-let chatUser = null;
-let chatTimer = null;
+let user=null;
+let ads=[];
+let favorites=new Set();
+let selectedCategory="";
+let favoriteMode=false;
+let selectedFiles=[];
+let oldImages=[];
+let previewUrls=[];
+let editId=null;
+let offset=0;
+let listVersion=0;
+let publishing=false;
+let recoveryMode=false;
+let recoveryUser=null;
+let chatAd=null;
+let chatUser=null;
+let chatTimer=null;
+let banners=[];
+let bannerIndex=0;
+let bannerTimer=null;
 
-const categories = [
+const categories=[
 ["Ҳама","📦"],
 ["Мошин","🚘"],
 ["Хона ва замин","🏠"],
@@ -656,7 +705,7 @@ const categories = [
 ["Дигар","📦"]
 ];
 
-const cities = [
+const cities=[
 "Душанбе","Хуҷанд","Бохтар","Кӯлоб",
 "Ҳисор","Ваҳдат","Турсунзода",
 "Панҷакент","Истаравшан","Исфара",
@@ -664,9 +713,68 @@ const cities = [
 "Рашт","Дигар"
 ];
 
-function icons(){
-if(window.lucide)lucide.createIcons();
-}
+// ФИЛТРҲОИ МАХСУС
+
+const fields={
+
+"Мошин":[
+["brand","Марка","select",[
+"Toyota","Mercedes-Benz","BMW","Hyundai",
+"Kia","Opel","Volkswagen","Audi","Lexus",
+"Nissan","Honda","Chevrolet","BYD",
+"Tesla","Ford","Mazda","VAZ","Дигар"
+]],
+["model","Модел","text"],
+["year","Соли барориш","number"],
+["mileage","Пробег (км)","number"],
+["fuel","Сӯзишворӣ","select",[
+"Бензин","Дизел","Газ","Гибрид","Электро"
+]],
+["gearbox","Қуттии суръат","select",[
+"Автомат","Механика","Робот","Вариатор"
+]],
+["body","Кузов","select",[
+"Седан","Хетчбек","Универсал","Кроссовер",
+"Ҷип","Минивэн","Пикап"
+]],
+["color","Ранг","select",[
+"Сафед","Сиёҳ","Хокистарӣ","Кабуд",
+"Сурх","Сабз","Дигар"
+]]
+],
+
+"Хона ва замин":[
+["property","Намуди амвол","select",[
+"Квартира","Хонаи шахсӣ","Замин",
+"Мағоза","Офис","Дигар"
+]],
+["deal","Фурӯш ё иҷора","select",[
+"Фурӯш","Иҷора"
+]],
+["rooms","Ҳуҷраҳо","select",[
+"1","2","3","4","5","6+"
+]],
+["area","Масоҳат (м²)","number"],
+["floor","Ошёна","number"],
+["totalFloors","Ҳамагӣ ошёна","number"],
+["repair","Таъмир","select",[
+"Нав","Евроремонт","Таъмири одӣ","Бе таъмир"
+]]
+],
+
+"Телефон":[
+["brand","Бренд","select",[
+"Apple","Samsung","Xiaomi","Huawei",
+"Honor","Google","Oppo","Realme","Дигар"
+]],
+["model","Модел","text"],
+["memory","Хотира","select",[
+"32 GB","64 GB","128 GB","256 GB","512 GB","1 TB"
+]],
+["color","Ранг","text"]
+]
+
+};
 
 function esc(v){
 return String(v??"").replace(/[&<>"']/g,c=>({
@@ -692,9 +800,18 @@ return db.storage.from("ad-images")
 .getPublicUrl(path).data.publicUrl;
 }
 
+function safeUrl(value){
+try{
+const u=new URL(value);
+return ["http:","https:"].includes(u.protocol)?u.href:"";
+}catch{return ""}
+}
+
 function show(id,navId){
 
 clearInterval(chatTimer);
+chatAd=null;
+chatUser=null;
 
 ["home","post","account","chat","admin"]
 .forEach(x=>$(x).classList.toggle("hidden",x!==id));
@@ -706,7 +823,6 @@ if(navId)$(navId)?.classList.add("active");
 
 notice("");
 window.scrollTo(0,0);
-icons();
 
 }
 
@@ -720,32 +836,254 @@ onclick="selectCategory(${i})">
 `).join("");
 
 $("category").innerHTML=categories.slice(1)
-.map(([name])=>`<option>${esc(name)}</option>`)
-.join("");
+.map(([name])=>`<option>${esc(name)}</option>`).join("");
 
 $("city").innerHTML=cities
-.map(c=>`<option>${esc(c)}</option>`)
-.join("");
+.map(c=>`<option>${esc(c)}</option>`).join("");
 
 $("cityFilter").innerHTML=
 '<option value="">Ҳамаи шаҳрҳо</option>'+
 $("city").innerHTML;
 
-icons();
+renderPostAttributes();
 
 }
 
-function selectCategory(i){
+function fieldHTML(field,prefix,values={}){
 
-selectedCategory=i?categories[i][0]:"";
-favoriteMode=false;
+const [key,label,type,options]=field;
+const value=values[key]??"";
 
-document.querySelectorAll(".category")
-.forEach((el,j)=>el.classList.toggle("active",i===j));
+if(type==="select"){
 
-loadAds();
+return `
+<div>
+<label>${esc(label)}</label>
+<select id="${prefix}_${key}">
+<option value="">Интихоб кунед</option>
+${options.map(o=>`
+<option value="${esc(o)}"
+${String(value)===o?"selected":""}>
+${esc(o)}
+</option>
+`).join("")}
+</select>
+</div>
+`;
 
 }
+
+return `
+<div>
+<label>${esc(label)}</label>
+<input id="${prefix}_${key}"
+type="${type}"
+${type==="number"?'min="0" step="1"':'maxlength="100"'}
+value="${esc(value)}"
+placeholder="${esc(label)}">
+</div>
+`;
+
+}
+
+function renderPostAttributes(values={}){
+
+const list=fields[$("category").value]||[];
+
+$("postAttributes").innerHTML=list.length?`
+<div class="extraFields">
+<h3>Маълумоти иловагӣ</h3>
+<div class="extraGrid">
+${list.map(f=>fieldHTML(f,"postExtra",values)).join("")}
+</div>
+</div>
+`:"";
+
+}
+
+function getPostAttributes(){
+
+const result={};
+
+for(const [key,label,type] of fields[$("category").value]||[]){
+
+const el=$("postExtra_"+key);
+
+if(!el||!el.value.trim())continue;
+
+if(type==="number"){
+
+const n=Number(el.value);
+
+if(Number.isFinite(n)&&n>=0)result[key]=n;
+
+}else{
+
+result[key]=el.value.trim();
+
+}
+
+}
+
+return result;
+
+}
+
+function renderSearchAttributes(category){
+
+const list=fields[category]||[];
+
+$("searchAttributes").innerHTML=list.length?`
+<div class="extraFields">
+<h3>Филтри махсус</h3>
+<div class="extraGrid">
+${list.map(f=>fieldHTML(f,"searchExtra")).join("")}
+</div>
+<button onclick="loadAds()">Ҷустуҷӯ</button>
+</div>
+`:"";
+
+}
+
+function applyExtraFilters(q){
+
+for(const [key,label,type] of fields[selectedCategory]||[]){
+
+const el=$("searchExtra_"+key);
+
+if(!el||!el.value.trim())continue;
+
+const value=type==="number"?
+Number(el.value):el.value.trim();
+
+q=q.contains("attributes",{[key]:value});
+
+}
+
+return q;
+
+}
+
+function renderDetailAttributes(a){
+
+const values=a.attributes||{};
+
+const html=(fields[a.category]||[])
+.filter(([key])=>values[key]!==undefined&&values[key]!==null)
+.map(([key,label])=>`
+<div class="extraDetail">
+<small>${esc(label)}</small>
+<strong>${esc(values[key])}</strong>
+</div>
+`).join("");
+
+return html?`
+<h3>Хусусиятҳо</h3>
+<div class="extraDetails">${html}</div>
+`:"";
+
+}
+
+$("category").onchange=()=>renderPostAttributes();
+
+// РЕКЛАМАҲО
+
+async function loadBanners(){
+
+const now=new Date().toISOString();
+
+const {data,error}=await db.from("banners")
+.select("*")
+.eq("active",true)
+.lte("starts_at",now)
+.or("ends_at.is.null,ends_at.gt."+now)
+.order("created_at",{ascending:false})
+.limit(10);
+
+if(error){
+console.error(error.message);
+return;
+}
+
+banners=(data||[]).filter(b=>safeUrl(b.image_url));
+
+clearInterval(bannerTimer);
+
+$("bannerBox").hidden=!banners.length;
+
+if(!banners.length){
+$("bannerBox").innerHTML="";
+return;
+}
+
+bannerIndex=0;
+renderBanner();
+
+if(banners.length>1){
+
+bannerTimer=setInterval(()=>{
+
+bannerIndex=(bannerIndex+1)%banners.length;
+renderBanner();
+
+},5000);
+
+}
+
+}
+
+function renderBanner(){
+
+const b=banners[bannerIndex];
+
+if(!b)return;
+
+const link=safeUrl(b.link_url);
+
+$("bannerBox").innerHTML=`
+
+<div class="banner">
+
+<img src="${esc(safeUrl(b.image_url))}"
+alt="${esc(b.title)}">
+
+<div class="bannerLabel">РЕКЛАМА</div>
+
+<div class="bannerText">
+
+<h2>${esc(b.title)}</h2>
+<p>${esc(b.description)}</p>
+
+${link?`
+<a href="${esc(link)}"
+target="_blank" rel="noopener noreferrer">
+Муфассал →
+</a>
+`:""}
+
+</div>
+</div>
+
+<div class="bannerDots">
+
+${banners.map((_,i)=>`
+<button class="bannerDot ${i===bannerIndex?"active":""}"
+aria-label="Рекламаи ${i+1}"
+onclick="chooseBanner(${i})"></button>
+`).join("")}
+
+</div>
+
+`;
+
+}
+
+function chooseBanner(i){
+bannerIndex=i;
+renderBanner();
+}
+
+// ДӮСТДОШТАҲО
 
 async function refreshFavorites(){
 
@@ -756,19 +1094,113 @@ if(!user)return;
 const uid=user.id;
 
 const {data,error}=await db.from("favorites")
-.select("ad_id")
-.eq("user_id",uid);
+.select("ad_id").eq("user_id",uid);
 
 if(!error&&user?.id===uid)
 favorites=new Set((data||[]).map(x=>x.ad_id));
 
 }
 
+async function toggleFavorite(id){
+
+if(!user){
+openAccount();
+return;
+}
+
+const result=favorites.has(id)?
+
+await db.from("favorites").delete()
+.eq("user_id",user.id).eq("ad_id",id):
+
+await db.from("favorites").insert({
+user_id:user.id,ad_id:id
+});
+
+if(result.error){
+notice(result.error.message);
+return;
+}
+
+await refreshFavorites();
+
+if(favoriteMode)loadAds();
+else renderAds();
+
+}
+
+function showFavorites(){
+
+if(recoveryMode)return;
+
+if(!user){
+openAccount();
+return;
+}
+
+favoriteMode=true;
+selectedCategory="";
+
+clearFilters();
+renderSearchAttributes("");
+
+document.querySelectorAll(".category")
+.forEach(el=>el.classList.remove("active"));
+
+show("home","navFav");
+loadAds();
+
+}
+
 // ЭЪЛОНҲО
+
+function clearFilters(){
+
+$("search").value="";
+$("cityFilter").value="";
+$("minPrice").value="";
+$("maxPrice").value="";
+
+}
+
+function goHome(){
+
+if(recoveryMode)return;
+
+favoriteMode=false;
+selectedCategory="";
+
+clearFilters();
+renderSearchAttributes("");
+
+document.querySelectorAll(".category")
+.forEach((el,i)=>el.classList.toggle("active",i===0));
+
+show("home","navHome");
+loadAds();
+
+}
+
+function selectCategory(i){
+
+favoriteMode=false;
+selectedCategory=i?categories[i][0]:"";
+
+document.querySelectorAll(".category")
+.forEach((el,j)=>el.classList.toggle("active",i===j));
+
+$("navFav").classList.remove("active");
+$("navHome").classList.add("active");
+
+renderSearchAttributes(selectedCategory);
+loadAds();
+
+}
 
 async function loadAds(append=false){
 
 const version=++listVersion;
+
 $("more").disabled=true;
 
 if(!append){
@@ -779,10 +1211,8 @@ $("products").textContent="Боргирӣ...";
 
 try{
 
-let q=db.from("ads")
-.select("*")
-.eq("active",true)
-.eq("blocked",false);
+let q=db.from("ads").select("*")
+.eq("active",true).eq("blocked",false);
 
 if(favoriteMode){
 
@@ -801,10 +1231,11 @@ q=q.eq("category",selectedCategory);
 
 }
 
-const city=$("cityFilter").value;
-if(city)q=q.eq("city",city);
+if($("cityFilter").value)
+q=q.eq("city",$("cityFilter").value);
 
 const search=$("search").value.trim();
+
 if(search)q=q.ilike("title","%"+search+"%");
 
 if($("minPrice").value!=="")
@@ -812,6 +1243,8 @@ q=q.gte("price",Number($("minPrice").value));
 
 if($("maxPrice").value!=="")
 q=q.lte("price",Number($("maxPrice").value));
+
+if(!favoriteMode)q=applyExtraFilters(q);
 
 const sort=$("sort").value;
 
@@ -842,11 +1275,14 @@ $("more").classList.toggle(
 
 }catch(e){
 
+if(version===listVersion){
 notice(e.message);
+$("products").textContent="Эълонҳоро гирифтан нашуд.";
+}
 
 }finally{
 
-$("more").disabled=false;
+if(version===listVersion)$("more").disabled=false;
 
 }
 
@@ -867,21 +1303,18 @@ onclick="event.stopPropagation();toggleFavorite('${a.id}')">
 ${favorites.has(a.id)?"♥":"♡"}
 </button>
 
-${a.images?.length?
-`<img loading="lazy" src="${esc(photo(a.images[0]))}"
-alt="${esc(a.title)}">`:
-'<div class="placeholder">📦</div>'}
+${a.images?.length?`
+<img loading="lazy"
+src="${esc(photo(a.images[0]))}"
+alt="${esc(a.title)}">
+`:'<div class="placeholder">📦</div>'}
 
 <div class="info">
 
 <div class="price">${esc(money(a.price))}</div>
-
 <h3>${esc(a.title)}</h3>
-
 <small>📍 ${esc(a.city)}</small>
-
 <p><small>${esc(a.condition)}</small></p>
-
 <small>${esc(new Date(a.created_at).toLocaleDateString("ru-RU"))}</small>
 
 </div>
@@ -892,92 +1325,12 @@ alt="${esc(a.title)}">`:
 
 }
 
-function goHome(){
-
-if(recoveryMode)return;
-
-favoriteMode=false;
-selectedCategory="";
-
-$("search").value="";
-$("cityFilter").value="";
-$("minPrice").value="";
-$("maxPrice").value="";
-
-document.querySelectorAll(".category")
-.forEach((el,i)=>el.classList.toggle("active",i===0));
-
-show("home","navHome");
-loadAds();
-
-}
-
-async function toggleFavorite(id){
-
-if(!user){
-openAccount();
-return;
-}
-
-let result;
-
-if(favorites.has(id)){
-
-result=await db.from("favorites")
-.delete()
-.eq("user_id",user.id)
-.eq("ad_id",id);
-
-if(!result.error)favorites.delete(id);
-
-}else{
-
-result=await db.from("favorites")
-.insert({user_id:user.id,ad_id:id});
-
-if(!result.error)favorites.add(id);
-
-}
-
-if(result.error){
-notice(result.error.message);
-return;
-}
-
-if(favoriteMode)loadAds();
-else renderAds();
-
-}
-
-function showFavorites(){
-
-if(recoveryMode)return;
-
-if(!user){
-openAccount();
-return;
-}
-
-favoriteMode=true;
-
-$("search").value="";
-$("cityFilter").value="";
-$("minPrice").value="";
-$("maxPrice").value="";
-
-show("home","navFav");
-loadAds();
-
-}
-
-// ДИДАНИ МАҲСУЛОТ
+// ДИДАНИ ЭЪЛОН
 
 async function openDetail(id){
 
 const {data:a,error}=await db.from("ads")
-.select("*")
-.eq("id",id)
-.single();
+.select("*").eq("id",id).single();
 
 if(error){
 notice("Эълон дастрас нест.");
@@ -1012,6 +1365,8 @@ onclick="$('mainPhoto').src=this.src">
 <p>Категория: ${esc(a.category)}</p>
 <p>Ҳолат: ${esc(a.condition)}</p>
 
+${renderDetailAttributes(a)}
+
 <h3>Тавсиф</h3>
 
 <p style="white-space:pre-wrap;overflow-wrap:anywhere">
@@ -1045,35 +1400,36 @@ if(!$("detail").open)$("detail").showModal();
 
 async function shareAd(id){
 
-const url=new URL(REDIRECT);
-url.searchParams.set("ad",id);
+const url=REDIRECT+"?ad="+encodeURIComponent(id);
 
 try{
 
 if(navigator.share)
-await navigator.share({url:url.href});
+await navigator.share({url});
 
 else if(navigator.clipboard){
-await navigator.clipboard.writeText(url.href);
+await navigator.clipboard.writeText(url);
 alert("Истинод нусхабардорӣ шуд.");
 }else{
-prompt("Истинод:",url.href);
+prompt("Истинод:",url);
 }
 
 }catch(e){}
 
 }
 
-// ҶОЙГИР КАРДАНИ ЭЪЛОН
+// ЭЪЛОНИ НАВ ВА АКСҲО
 
 function openPost(){
 
 if(recoveryMode||publishing)return;
 
 if(!user){
+
 openAccount();
-notice("Барои гузоштани эълон аввал сабти ном кунед.");
+notice("Аввал сабти ном кунед.");
 return;
+
 }
 
 editId=null;
@@ -1083,7 +1439,9 @@ oldImages=[];
 $("postForm").reset();
 $("postTitle").textContent="Эълони нав";
 
+renderPostAttributes();
 renderPreview();
+
 show("post","navPost");
 
 }
@@ -1095,21 +1453,25 @@ if(publishing)return;
 for(const file of input.files){
 
 if(selectedFiles.length+oldImages.length>=10){
+
 notice("Танҳо 10 акс иҷозат аст.");
 break;
+
 }
 
 if(!["image/jpeg","image/png","image/webp"]
 .includes(file.type)){
 
-notice("Танҳо JPG, PNG ва WEBP қабул мешавад.");
+notice("Танҳо JPG, PNG ва WEBP.");
 continue;
 
 }
 
 if(file.size>5242880){
+
 notice("Ҳар акс бояд то 5 MB бошад.");
 continue;
+
 }
 
 selectedFiles.push(file);
@@ -1174,8 +1536,6 @@ onclick="removePhoto('new',${i})">✕</button>
 
 }
 
-// САБТИ АКСҲО ВА ЭЪЛОН
-
 $("postForm").onsubmit=async e=>{
 
 e.preventDefault();
@@ -1216,7 +1576,8 @@ city:$("city").value,
 price:Number($("price").value),
 condition:$("condition").value,
 phone,
-description:$("description").value.trim()
+description:$("description").value.trim(),
+attributes:getPostAttributes()
 
 };
 
@@ -1250,25 +1611,15 @@ values.images=[...existing,...uploaded];
 if(user?.id!==owner)
 throw new Error("Аз нав ворид шавед.");
 
-let result;
+const result=currentEdit?
 
-if(currentEdit){
+await db.from("ads").update(values)
+.eq("id",currentEdit).eq("user_id",owner)
+.select("id").single():
 
-result=await db.from("ads")
-.update(values)
-.eq("id",currentEdit)
-.eq("user_id",owner)
-.select("id")
-.single();
-
-}else{
-
-result=await db.from("ads")
+await db.from("ads")
 .insert({...values,user_id:owner})
-.select("id")
-.single();
-
-}
+.select("id").single();
 
 if(result.error)throw result.error;
 
@@ -1279,6 +1630,7 @@ oldImages=[];
 renderPreview();
 
 goHome();
+
 notice("Эълони шумо бомуваффақият ҷойгир шуд!");
 
 }catch(e){
@@ -1304,7 +1656,7 @@ $("publishButton").textContent=
 
 };
 
-// САБТИ НОМ ВА ВОРИДШАВӢ
+// САБТИ НОМ
 
 function authForm(register=false){
 
@@ -1364,8 +1716,7 @@ const password=$("password").value;
 const result=register?
 
 await db.auth.signUp({
-email,
-password,
+email,password,
 options:{emailRedirectTo:REDIRECT}
 }):
 
@@ -1462,15 +1813,11 @@ e.preventDefault();
 
 const btn=e.target.querySelector("button");
 
-if(btn.disabled)return;
-
 const password=$("newPassword").value;
 
 if(password!==$("confirmPassword").value){
-
 notice("Паролҳо якхела нестанд.");
 return;
-
 }
 
 btn.disabled=true;
@@ -1491,12 +1838,12 @@ recoveryUser=null;
 
 const result=await db.auth.signOut();
 
+if(result.error)throw result.error;
+
 user=null;
 authForm();
 
-notice(result.error?
-"Парол иваз шуд. Аз аккаунт бароед.":
-"Парол иваз шуд. Бо пароли нав ворид шавед.");
+notice("Парол иваз шуд. Бо пароли нав ворид шавед.");
 
 }catch(e){
 
@@ -1532,14 +1879,11 @@ $("accountContent").innerHTML=`
 <div class="card formCard">
 
 <h2>👤 Аккаунти ман</h2>
-
 <p>${esc(user.email)}</p>
 
 <div class="row">
-
 <button onclick="openPost()">＋ Эълони нав</button>
 <button class="red" onclick="logout()">Баромадан</button>
-
 </div>
 
 <br>
@@ -1556,17 +1900,14 @@ onclick="openAdmin()">🛡️ Admin</button>
 </div>
 
 <div class="card formCard">
-
 <h2>Эълонҳои ман</h2>
 <div id="myAds">Боргирӣ...</div>
-
 </div>
 
 `;
 
 const {data,error}=await db.from("ads")
-.select("*")
-.eq("user_id",uid)
+.select("*").eq("user_id",uid)
 .order("created_at",{ascending:false})
 .limit(100);
 
@@ -1581,15 +1922,16 @@ $("myAds").innerHTML=(data||[]).map(a=>`
 
 <div class="card" style="background:#f5f6fa">
 
-${a.images?.length?
-`<img src="${esc(photo(a.images[0]))}"
-style="width:100%;height:190px;object-fit:cover;border-radius:12px">`:""}
+${a.images?.length?`
+<img src="${esc(photo(a.images[0]))}"
+style="width:100%;height:190px;object-fit:cover;border-radius:12px">
+`:""}
 
 <h3>${esc(a.title)}</h3>
 
 <div class="price">${esc(money(a.price))}</div>
 
-<p>${a.blocked?"🔴 Аз тарафи Admin баста":
+<p>${a.blocked?"🔴 Баста":
 a.active?"🟢 Фаъол":"⚪ Пинҳон"}</p>
 
 <div class="row">
@@ -1630,17 +1972,13 @@ notice(error?error.message:
 
 }
 
-// ТАҲРИРИ ЭЪЛОН
-
 async function editAd(id){
 
 if(!user||publishing)return;
 
 const {data:a,error}=await db.from("ads")
-.select("*")
-.eq("id",id)
-.eq("user_id",user.id)
-.single();
+.select("*").eq("id",id)
+.eq("user_id",user.id).single();
 
 if(error){
 notice(error.message);
@@ -1663,6 +2001,7 @@ $(key).value=a[key];
 
 }
 
+renderPostAttributes(a.attributes||{});
 renderPreview();
 
 }
@@ -1673,8 +2012,7 @@ if(!user)return;
 
 const {error}=await db.from("ads")
 .update({active})
-.eq("id",id)
-.eq("user_id",user.id);
+.eq("id",id).eq("user_id",user.id);
 
 if(error)notice(error.message);
 else openAccount();
@@ -1688,10 +2026,8 @@ if(!user)return;
 if(!confirm("Эълон ва паёмҳои он нест карда шаванд?"))
 return;
 
-const {error}=await db.from("ads")
-.delete()
-.eq("id",id)
-.eq("user_id",user.id);
+const {error}=await db.from("ads").delete()
+.eq("id",id).eq("user_id",user.id);
 
 if(error)notice(error.message);
 else openAccount();
@@ -1730,6 +2066,8 @@ return;
 }
 
 await openChats();
+
+if(!$("chat").classList.contains("hidden"))
 openConversation(adId,otherId);
 
 }
@@ -1744,9 +2082,6 @@ return;
 }
 
 show("chat","navChat");
-
-chatAd=null;
-chatUser=null;
 
 $("chatContent").innerHTML="";
 
@@ -1789,9 +2124,7 @@ return `
 <button class="gray full"
 style="margin-bottom:8px"
 onclick="openConversation('${m.ad_id}','${other}')">
-
 💬 ${esc(m.message.slice(0,65))}
-
 </button>
 
 `;
@@ -1817,10 +2150,8 @@ $("chatContent").innerHTML=`
 
 <form id="messageForm">
 
-<textarea id="messageInput"
-maxlength="2000"
-placeholder="Паём нависед..."
-required></textarea>
+<textarea id="messageInput" maxlength="2000"
+placeholder="Паём нависед..." required></textarea>
 
 <button class="full" type="submit">
 Фиристодан
@@ -1878,6 +2209,7 @@ btn.disabled=false;
 };
 
 loadMessages();
+
 chatTimer=setInterval(loadMessages,5000);
 
 }
@@ -1891,8 +2223,7 @@ const other=chatUser;
 const uid=user.id;
 
 const {data,error}=await db.from("messages")
-.select("*")
-.eq("ad_id",ad)
+.select("*").eq("ad_id",ad)
 .or(`and(sender_id.eq.${uid},receiver_id.eq.${other}),and(sender_id.eq.${other},receiver_id.eq.${uid})`)
 .order("created_at",{ascending:false})
 .limit(100);
@@ -1910,20 +2241,18 @@ const list=$("messageList");
 const html=(data||[]).reverse().map(m=>`
 
 <div class="chatMessage ${m.sender_id===uid?"mine":""}">
-
 ${esc(m.message)}
-
 <br>
-
 <small>${esc(new Date(m.created_at).toLocaleString("ru-RU"))}</small>
-
 </div>
 
 `).join("");
 
 if(list.innerHTML!==html){
+
 list.innerHTML=html;
 list.scrollTop=list.scrollHeight;
+
 }
 
 }
@@ -1935,10 +2264,8 @@ async function openAdmin(){
 const check=await db.rpc("is_admin");
 
 if(check.data!==true){
-
 notice("Дастрасӣ манъ аст.");
 return;
-
 }
 
 show("admin","navAccount");
@@ -1962,7 +2289,6 @@ $("adminContent").innerHTML=`
 <div class="card" style="background:#f5f6fa">
 
 <h3>${esc(a.title)}</h3>
-
 <p>${esc(money(a.price))}</p>
 <p>📍 ${esc(a.city)}</p>
 <p>Телефон: ${esc(a.phone)}</p>
@@ -1983,8 +2309,7 @@ ${a.blocked?"Кушодани эълон":"Бастани эълон"}
 async function blockAd(id,blocked){
 
 const {error}=await db.rpc("admin_block_ad",{
-p_id:id,
-p_blocked:blocked
+p_id:id,p_blocked:blocked
 });
 
 if(error)notice(error.message);
@@ -1995,9 +2320,7 @@ else openAdmin();
 // ОҒОЗИ БАРНОМА
 
 $("search").addEventListener("keydown",e=>{
-
 if(e.key==="Enter")loadAds();
-
 });
 
 $("cityFilter").onchange=()=>loadAds();
@@ -2034,17 +2357,15 @@ user=data?.session?.user||null;
 
 if(recoveryMode)return;
 
-if(recoveryRequested){
-
-show("account","navAccount");
-authForm();
-notice("Агар истинод кор накунад, истиноди нави барқароркунӣ гиред.");
-return;
-
-}
-
 await refreshFavorites();
+
 await loadAds();
+
+loadBanners().catch(console.error);
+
+setInterval(()=>{
+loadBanners().catch(console.error);
+},60000);
 
 const ad=new URLSearchParams(location.search).get("ad");
 
